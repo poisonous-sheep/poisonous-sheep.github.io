@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Posts on 小羊的博客！</title>
+        <link>http://localhost:1313/post/</link>
+        <description>Recent content in Posts on 小羊的博客！</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>zh-cn</language>
+        <copyright>有毒的羊</copyright>
+        <lastBuildDate>Thu, 03 Apr 2025 01:58:40 +0800</lastBuildDate><atom:link href="http://localhost:1313/post/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>第一个博客！</title>
+        <link>http://localhost:1313/p/%E7%AC%AC%E4%B8%80%E4%B8%AA%E5%8D%9A%E5%AE%A2/</link>
+        <pubDate>Thu, 03 Apr 2025 01:58:40 +0800</pubDate>
+        
+        <guid>http://localhost:1313/p/%E7%AC%AC%E4%B8%80%E4%B8%AA%E5%8D%9A%E5%AE%A2/</guid>
+        <description>&lt;img src="http://localhost:1313/p/%E7%AC%AC%E4%B8%80%E4%B8%AA%E5%8D%9A%E5%AE%A2/QQ_1743621657874.png" alt="Featured image of post 第一个博客！" /&gt;&lt;h2 id=&#34;小羊第一次写也很激动&#34;&gt;小羊第一次写也很激动
+&lt;/h2&gt;&lt;h4 id=&#34;第一次写自己的博客以后会慢慢美化的&#34;&gt;第一次写自己的博客，以后会慢慢美化的！！
+&lt;/h4&gt;&lt;p&gt;1.放点神秘春卷饭&lt;/p&gt;
+&lt;p&gt;2.搞个音乐&lt;/p&gt;
+&lt;p&gt;3.放个看板娘&lt;/p&gt;
+&lt;p&gt;4.动态加载页面&lt;/p&gt;
+&lt;p&gt;5.第五人格启动&lt;/p&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>
