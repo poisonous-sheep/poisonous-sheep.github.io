@@ -7,6 +7,7 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-cn</language>
         <copyright>有毒的羊</copyright>
+<<<<<<< HEAD
         <lastBuildDate>Fri, 04 Apr 2025 17:58:40 +0800</lastBuildDate><atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" /><item>
         <title>图论&#43;树</title>
         <link>http://localhost:1313/p/%E5%9B%BE%E8%AE%BA-%E6%A0%91/</link>
@@ -339,6 +340,9 @@
 </description>
         </item>
         <item>
+=======
+        <lastBuildDate>Thu, 03 Apr 2025 01:58:40 +0800</lastBuildDate><atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" /><item>
+>>>>>>> 0591b21d706af52db90f6fe64a1ffc3eb4cf3aaf
         <title>第一个博客！</title>
         <link>http://localhost:1313/p/%E7%AC%AC%E4%B8%80%E4%B8%AA%E5%8D%9A%E5%AE%A2/</link>
         <pubDate>Thu, 03 Apr 2025 01:58:40 +0800</pubDate>

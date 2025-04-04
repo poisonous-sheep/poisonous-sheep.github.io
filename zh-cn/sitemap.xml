@@ -3,7 +3,11 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>http://localhost:1313/</loc>
+<<<<<<< HEAD
     <lastmod>2025-04-04T17:58:40+08:00</lastmod>
+=======
+    <lastmod>2025-04-03T01:58:40+08:00</lastmod>
+>>>>>>> 0591b21d706af52db90f6fe64a1ffc3eb4cf3aaf
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
@@ -16,6 +20,7 @@
                 />
   </url><url>
     <loc>http://localhost:1313/post/</loc>
+<<<<<<< HEAD
     <lastmod>2025-04-04T17:58:40+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/p/%E5%9B%BE%E8%AE%BA-%E6%A0%91/</loc>
@@ -23,6 +28,9 @@
   </url><url>
     <loc>http://localhost:1313/p/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/</loc>
     <lastmod>2025-04-03T17:58:40+08:00</lastmod>
+=======
+    <lastmod>2025-04-03T01:58:40+08:00</lastmod>
+>>>>>>> 0591b21d706af52db90f6fe64a1ffc3eb4cf3aaf
   </url><url>
     <loc>http://localhost:1313/p/%E7%AC%AC%E4%B8%80%E4%B8%AA%E5%8D%9A%E5%AE%A2/</loc>
     <lastmod>2025-04-03T01:58:40+08:00</lastmod>
@@ -34,6 +42,10 @@
     <lastmod>2019-05-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/categories/</loc>
+<<<<<<< HEAD
+=======
+    <lastmod>2019-03-09T00:00:00+00:00</lastmod>
+>>>>>>> 0591b21d706af52db90f6fe64a1ffc3eb4cf3aaf
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
@@ -45,7 +57,21 @@
                 href="http://localhost:1313/categories/"
                 />
   </url><url>
+<<<<<<< HEAD
     <loc>http://localhost:1313/tags/</loc>
+=======
+    <loc>http://localhost:1313/tags/markdown/</loc>
+    <lastmod>2019-03-09T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/p/placeholder-text/</loc>
+    <lastmod>2019-03-09T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/tag-with-whitespaces/</loc>
+    <lastmod>2019-03-09T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/</loc>
+    <lastmod>2019-03-09T00:00:00+00:00</lastmod>
+>>>>>>> 0591b21d706af52db90f6fe64a1ffc3eb4cf3aaf
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
@@ -58,6 +84,16 @@
                 />
   </url><url>
     <loc>http://localhost:1313/categories/test/</loc>
+<<<<<<< HEAD
+=======
+    <lastmod>2019-03-09T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/categories/test-with-whitespaces/</loc>
+    <lastmod>2019-03-09T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/text/</loc>
+    <lastmod>2019-03-09T00:00:00+00:00</lastmod>
+>>>>>>> 0591b21d706af52db90f6fe64a1ffc3eb4cf3aaf
   </url><url>
     <loc>http://localhost:1313/%E5%85%B3%E4%BA%8E/</loc>
   </url><url>
