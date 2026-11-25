@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="day">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="小羊的小小窝 — 有毒的羊的个人博客（游戏 + 学习 + 术力口），以早年 n-buna 与早期 Yorushika 唱片美学打造的盛夏青春个人站。">
+  <title>小羊的小小窝 — 有毒的羊</title>
+  <link rel="icon" href="favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=IBM+Plex+Mono:wght@300;400&family=Inter:wght@300;400;500&family=Noto+Serif+SC:wght@300;400;500;600&family=Shippori+Mincho:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- 纸张微颗粒画册质感层 -->
+  <div class="grain-overlay" aria-hidden="true"></div>
+
+  <!-- 顶部文章阅读进度细线 -->
+  <div id="reading-progress" class="reading-progress" aria-hidden="true"></div>
+
+  <!-- 白昼盛夏日光气泡 / 终电夜空花火萤火漂浮层 -->
+  <div class="summer-bokeh-layer" aria-hidden="true">
+    <span class="bokeh bokeh-1"></span>
+    <span class="bokeh bokeh-2"></span>
+    <span class="bokeh bokeh-3"></span>
+    <span class="bokeh bokeh-4"></span>
+  </div>
+  <div id="fireflies-layer" class="fireflies-layer" aria-hidden="true">
+    <span class="firefly firefly-1"></span>
+    <span class="firefly firefly-2"></span>
+    <span class="firefly firefly-3"></span>
+    <span class="firefly firefly-4"></span>
+    <span class="firefly firefly-5"></span>
+  </div>
+
+  <!-- 顶部极细夏日电线天际线装饰 -->
+  <svg class="sky-wires-bg" viewBox="0 0 1440 240" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0 44 Q 420 132, 920 68 T 1440 28" stroke="currentColor" stroke-width="0.9"/>
+    <path d="M0 78 Q 480 168, 960 96 T 1440 62" stroke="currentColor" stroke-width="0.75"/>
+    <path d="M0 124 Q 520 202, 1020 132 T 1440 104" stroke="currentColor" stroke-width="0.6"/>
+  </svg>
+
+  <!-- 杂志刊头微信息带 -->
+  <div class="masthead-bar">
+    <div class="masthead-inner">
+      <span id="masthead-issue">VOL. 01 · SUMMER YOUTH ARCHIVE</span>
+      <span id="masthead-coords">游戏 + 学习 + 术力口 · 盛夏终电晴空线</span>
+    </div>
+  </div>
+
+  <!-- 顶部通透导航栏 -->
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="#/" class="site-brand" id="site-brand">
+        <span class="brand-seal" id="header-seal" aria-hidden="true">羊</span>
+        <span class="brand-text">
+          <span class="brand-name" id="header-site-name">小羊的小小窝</span>
+          <span class="brand-en" id="header-site-en">POISONOUS SHEEP</span>
+        </span>
+      </a>
+
+      <nav class="site-nav" aria-label="主导航">
+        <a href="#/" class="nav-link" data-route="home">首页</a>
+        <a href="#/discography" class="nav-link" data-route="discography">唱片架</a>
+        <a href="#/gallery" class="nav-link" data-route="gallery">夏末影集</a>
+        <a href="#/fragments" class="nav-link" data-route="fragments">车票碎片</a>
+        <a href="#/archives" class="nav-link" data-route="archives">归档</a>
+        <a href="#/about" class="nav-link" data-route="about">关于</a>
+      </nav>
+
+      <div class="header-actions">
+        <button type="button" id="search-trigger" class="icon-pill-btn" aria-label="站内搜索" title="站内搜索 (Ctrl + K)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.3-4.3"></path>
+          </svg>
+          <span class="kbd-hint">⌘K</span>
+        </button>
+
+        <button type="button" id="theme-toggle" class="theme-toggle" aria-label="切换盛夏白昼与终电夜空模式" title="切换盛夏 / 终电夜模式">
+          <span class="theme-icon theme-icon-sun" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="4"></circle>
+              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+            </svg>
+          </span>
+          <span class="theme-icon theme-icon-moon" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          </span>
+          <span class="theme-label" id="theme-label">盛夏</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主内容区 -->
+  <main id="app" class="app-main" tabindex="-1"></main>
+
+  <!-- 页脚 -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="train-line-ornament" aria-hidden="true">
+        <span class="station-tag-mini">始発</span>
+        <span class="station-node active"></span>
+        <span class="station-rail"></span>
+        <span class="station-node sky"></span>
+        <span class="station-rail"></span>
+        <span class="station-node coral"></span>
+        <span class="station-tag-mini">終電</span>
+      </div>
+      <p class="footer-copy" id="footer-copy">© 2025–2026 有毒的羊 · 小羊的小小窝</p>
+      <p class="footer-note">游戏 + 学习 + 术力口 · 花と水飴、最終電車</p>
+    </div>
+  </footer>
+
+  <!-- 回到顶部悬浮按钮 -->
+  <button type="button" id="back-to-top" class="back-to-top" aria-label="回到顶部" title="回到顶部">↑</button>
+
+  <!-- 克制的右下角听歌角标 -->
+  <aside id="bgm-widget" class="bgm-widget" aria-label="站台BGM角标">
+    <div class="bgm-header">
+      <span class="bgm-status-dot" aria-hidden="true"></span>
+      <span class="bgm-tag" id="bgm-tag">NOW LISTENING</span>
+      <div class="bgm-controls">
+        <button type="button" class="bgm-btn" id="bgm-prev" title="上一首" aria-label="上一首">‹</button>
+        <button type="button" class="bgm-btn bgm-play-btn" id="bgm-play" title="播放轻柔吉他泛音氛围 / 暂停" aria-label="播放或暂停氛围音">♪</button>
+        <button type="button" class="bgm-btn" id="bgm-next" title="下一首" aria-label="下一首">›</button>
+        <button type="button" class="bgm-btn" id="bgm-collapse" title="收起或展开" aria-label="收起或展开">–</button>
+      </div>
+    </div>
+    <div class="bgm-body" id="bgm-body">
+      <div class="bgm-body-row">
+        <div class="bgm-cover" id="bgm-cover" aria-hidden="true"></div>
+        <div class="bgm-info">
+          <div class="bgm-title" id="bgm-title">夜明けと蛍 — n-buna</div>
+          <div class="bgm-lyric" id="bgm-lyric">黎明将至，海风与萤火一同沉入群青。</div>
+        </div>
+      </div>
+      <div class="bgm-progress-rail" aria-hidden="true">
+        <span class="bgm-progress-fill" id="bgm-progress-fill"></span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- 专辑歌词本 / Liner Notes 弹窗 -->
+  <div id="album-modal" class="overlay-modal" role="dialog" aria-modal="true" aria-hidden="true"></div>
+
+  <!-- 夏末影集全屏灯箱 -->
+  <div id="lightbox-modal" class="overlay-modal lightbox-modal" role="dialog" aria-modal="true" aria-hidden="true"></div>
+
+  <!-- 站内全站速查搜索弹窗 (Ctrl + K) -->
+  <div id="search-modal" class="overlay-modal search-modal" role="dialog" aria-modal="true" aria-hidden="true"></div>
+
+  <!-- 轻提示 Toast -->
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+  <script src="js/config.js"></script>
+  <script src="js/markdown.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

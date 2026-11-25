@@ -1,0 +1,102 @@
+<svg viewBox="0 0 1200 900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="凌晨四点的黎明与萤火">
+  <defs>
+    <linearGradient id="df-sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#07101E"/>
+      <stop offset="46%" stop-color="#0F2039"/>
+      <stop offset="76%" stop-color="#1A3B5C"/>
+      <stop offset="93%" stop-color="#356D88"/>
+      <stop offset="100%" stop-color="#76C2C4"/>
+    </linearGradient>
+    <linearGradient id="df-sea" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#224C6B"/>
+      <stop offset="28%" stop-color="#132944"/>
+      <stop offset="100%" stop-color="#081220"/>
+    </linearGradient>
+    <radialGradient id="df-moonhalo" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#DDF2FA" stop-opacity="0.42"/>
+      <stop offset="45%" stop-color="#7BC0E8" stop-opacity="0.14"/>
+      <stop offset="100%" stop-color="#7BC0E8" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="df-firefly" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#E6FFF8" stop-opacity="1"/>
+      <stop offset="35%" stop-color="#7CE3D0" stop-opacity="0.72"/>
+      <stop offset="100%" stop-color="#7CE3D0" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="df-blur" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="12"/>
+    </filter>
+  </defs>
+
+  <!-- 群青黎明夜空 -->
+  <rect width="1200" height="585" fill="url(#df-sky)"/>
+
+  <!-- 地平线微亮天青晨雾 -->
+  <ellipse cx="640" cy="585" rx="520" ry="62" fill="#89D8D3" opacity="0.22" filter="url(#df-blur)"/>
+
+  <!-- 稀疏星辰 -->
+  <g fill="#E6F2FA">
+    <circle cx="145" cy="112" r="1.6" opacity="0.78"/>
+    <circle cx="242" cy="186" r="1.2" opacity="0.55"/>
+    <circle cx="338" cy="92" r="1.8" opacity="0.82"/>
+    <circle cx="465" cy="154" r="1.1" opacity="0.48"/>
+    <circle cx="585" cy="78" r="1.4" opacity="0.68"/>
+    <circle cx="715" cy="136" r="1.7" opacity="0.72"/>
+    <circle cx="845" cy="86" r="1.2" opacity="0.55"/>
+    <circle cx="1065" cy="126" r="1.5" opacity="0.75"/>
+    <circle cx="1012" cy="242" r="1.1" opacity="0.45"/>
+    <circle cx="192" cy="296" r="1.3" opacity="0.42"/>
+  </g>
+
+  <!-- 弯月与月晕 -->
+  <circle cx="885" cy="195" r="135" fill="url(#df-moonhalo)"/>
+  <path d="M892 146 A 48 48 0 1 0 932 222 A 38 38 0 1 1 892 146 Z" fill="#F0F8FC" opacity="0.95"/>
+
+  <!-- 黎明前静谧海面 -->
+  <rect x="0" y="582" width="1200" height="318" fill="url(#df-sea)"/>
+  <line x1="0" y1="582" x2="1200" y2="582" stroke="#9EE4DF" stroke-opacity="0.45" stroke-width="1.4"/>
+
+  <!-- 月光海面破碎倒影 -->
+  <g stroke="#BCEEF0" stroke-linecap="round">
+    <line x1="835" y1="600" x2="942" y2="600" stroke-width="2" opacity="0.55"/>
+    <line x1="852" y1="616" x2="928" y2="616" stroke-width="1.7" opacity="0.46"/>
+    <line x1="844" y1="635" x2="936" y2="635" stroke-width="1.5" opacity="0.38"/>
+    <line x1="862" y1="656" x2="918" y2="656" stroke-width="1.3" opacity="0.32"/>
+    <line x1="870" y1="680" x2="912" y2="680" stroke-width="1.2" opacity="0.25"/>
+    <line x1="876" y1="708" x2="904" y2="708" stroke-width="1" opacity="0.2"/>
+  </g>
+
+  <!-- 远岸防波堤与孤灯 -->
+  <path d="M0 578 L345 578 L368 592 L0 592 Z" fill="#091322"/>
+  <rect x="332" y="544" width="6" height="36" fill="#0C192C"/>
+  <circle cx="335" cy="542" r="14" fill="#F2C88B" opacity="0.32" filter="url(#df-blur)"/>
+  <circle cx="335" cy="542" r="2.8" fill="#FFF3D6"/>
+
+  <!-- 前景暗影堤岸与夜风海草 -->
+  <path d="M0 785 Q 320 755, 680 792 T 1200 774 L1200 900 L0 900 Z" fill="#060D17"/>
+  <g stroke="#0A1727" stroke-width="3.2" fill="none" stroke-linecap="round">
+    <path d="M120 860 Q 134 760, 168 698"/>
+    <path d="M148 865 Q 158 780, 185 724"/>
+    <path d="M192 872 Q 198 795, 222 745"/>
+    <path d="M985 868 Q 974 776, 945 712"/>
+    <path d="M1025 870 Q 1018 792, 992 738"/>
+    <path d="M1078 866 Q 1068 780, 1044 720"/>
+  </g>
+
+  <!-- 萤火微光（柔焦光晕 + 亮核） -->
+  <g>
+    <circle cx="248" cy="642" r="28" fill="url(#df-firefly)"/>
+    <circle cx="248" cy="642" r="3.4" fill="#FFFFFF"/>
+
+    <circle cx="468" cy="532" r="22" fill="url(#df-firefly)" opacity="0.88"/>
+    <circle cx="468" cy="532" r="2.6" fill="#FFFFFF"/>
+
+    <circle cx="722" cy="686" r="32" fill="url(#df-firefly)" opacity="0.92"/>
+    <circle cx="722" cy="686" r="3.8" fill="#FFFFFF"/>
+
+    <circle cx="964" cy="614" r="24" fill="url(#df-firefly)" opacity="0.82"/>
+    <circle cx="964" cy="614" r="2.8" fill="#FFFFFF"/>
+
+    <circle cx="605" cy="744" r="18" fill="url(#df-firefly)" opacity="0.72"/>
+    <circle cx="605" cy="744" r="2.2" fill="#FFFFFF"/>
+  </g>
+</svg>
