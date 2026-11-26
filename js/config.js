@@ -348,6 +348,15 @@ window.BLOG_CONFIG = {
       group: "学习站台"
     },
     {
+      name: "mohao",
+      desc: "mohao宝宝",
+      url: "https://blog.mohao.me/",
+      avatar: "https://blog.mohao.me/avatar.png",
+      monogram: "GH",
+      tag: "",
+      group: "音乐与同好"
+    },
+    {
       name: "OI Wiki",
       desc: "开源信息学竞赛知识库，数据结构、图论与动态规划随查手册。",
       url: "https://oi-wiki.org",
