@@ -1044,11 +1044,13 @@ a.section-sub:hover {
   z-index: 5;
 }
 
-/* 亚克力斜角高光扫过 */
+/* 亚克力斜角高光扫过（支持鼠标跟随动态高光坐标） */
 .cd-sheen {
   position: absolute;
   inset: 0;
-  background: linear-gradient(125deg, rgba(255, 255, 255, 0.32) 0%, rgba(255, 255, 255, 0.05) 36%, transparent 56%);
+  background:
+    radial-gradient(circle at var(--gx, 28%) var(--gy, 24%), rgba(255, 255, 255, 0.36) 0%, transparent 54%),
+    linear-gradient(125deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.04) 36%, transparent 56%);
   pointer-events: none;
   z-index: 4;
 }
@@ -2637,14 +2639,57 @@ a.section-sub:hover {
   gap: 0.65rem;
 }
 
-.bgm-cover {
-  width: 42px;
-  height: 42px;
-  border-radius: 5px;
-  overflow: hidden;
+.bgm-cover-wrap {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
+}
+
+.bgm-scroll-ring {
+  position: absolute;
+  inset: 0;
+  width: 48px;
+  height: 48px;
+  transform: rotate(-90deg);
+  pointer-events: none;
+}
+
+.bgm-ring-track {
+  fill: none;
+  stroke: var(--border);
+  stroke-width: 1.5;
+}
+
+.bgm-ring-fill {
+  fill: none;
+  stroke: var(--coral);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-dasharray: 132;
+  stroke-dashoffset: 132;
+  transition: stroke-dashoffset 140ms linear;
+}
+
+.bgm-cover {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  overflow: hidden;
   border: 1px solid var(--border);
   background: var(--accent-soft);
+}
+
+.bgm-widget.is-playing .bgm-cover img {
+  animation: miniCoverSpin 18s linear infinite;
+}
+
+@keyframes miniCoverSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .bgm-cover img {
@@ -2843,5 +2888,359 @@ a.section-sub:hover {
   }
   html {
     scroll-behavior: auto;
+  }
+}
+
+/* ==========================================================================
+   View Transitions API 圆形暮色扩散 & 平滑路由转场
+   ========================================================================== */
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 520ms;
+  animation-timing-function: var(--ease);
+}
+
+html.theme-wiping::view-transition-old(root),
+html.theme-wiping::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+html.theme-wiping::view-transition-old(root) {
+  z-index: 1;
+}
+
+html.theme-wiping::view-transition-new(root) {
+  z-index: 9999;
+  animation: themeCircleReveal 620ms var(--ease) both;
+}
+
+@keyframes themeCircleReveal {
+  from {
+    clip-path: circle(0px at var(--vt-x, 50%) var(--vt-y, 40px));
+  }
+  to {
+    clip-path: circle(var(--vt-r, 150vmax) at var(--vt-x, 50%) var(--vt-y, 40px));
+  }
+}
+
+/* ==========================================================================
+   初次进站幕布序曲 & 桌面端细腻跟手光环
+   ========================================================================== */
+
+.opening-curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  transition: transform 680ms var(--ease), opacity 480ms ease;
+}
+
+.opening-curtain.is-lifted {
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.opening-curtain.is-hidden {
+  display: none;
+}
+
+.curtain-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.curtain-seal {
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  border: 1.5px solid var(--coral);
+  color: var(--coral);
+  background: var(--coral-soft);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+}
+
+.curtain-title {
+  font-size: 1.35rem;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+}
+
+.curtain-sub {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  color: var(--text-muted);
+}
+
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  background: transparent;
+  pointer-events: none;
+  z-index: 250;
+  opacity: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translate3d(-99px, -99px, 0);
+  transition: width 260ms var(--ease), height 260ms var(--ease), background-color 260ms ease, border-color 260ms ease, opacity 240ms ease;
+}
+
+.cursor-ring.is-visible {
+  opacity: 1;
+}
+
+.cursor-ring.is-hover {
+  width: 54px;
+  height: 54px;
+  background: color-mix(in srgb, var(--sky) 14%, transparent);
+  border-color: var(--accent);
+  backdrop-filter: blur(2px);
+}
+
+.cursor-ring-label {
+  font-family: var(--font-mono);
+  font-size: 0.54rem;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+
+.cursor-ring.is-hover .cursor-ring-label {
+  opacity: 1;
+}
+
+@media (hover: none), (pointer: coarse) {
+  .cursor-ring {
+    display: none !important;
+  }
+}
+
+/* ==========================================================================
+   零依赖 C++ / JS 语法高亮（盛夏画纸配色）
+   ========================================================================== */
+
+.tok-com { color: #8295aa; font-style: italic; }
+.tok-prep { color: #58a484; }
+.tok-kw { color: #2356a8; font-weight: 500; }
+.tok-type { color: #2f7db8; }
+.tok-str { color: #c8635e; }
+.tok-num { color: #c47a3e; }
+
+[data-theme="night"] .tok-com { color: #6e85a3; }
+[data-theme="night"] .tok-prep { color: #7ce3d0; }
+[data-theme="night"] .tok-kw { color: #87c4f4; }
+[data-theme="night"] .tok-type { color: #a5d8ff; }
+[data-theme="night"] .tok-str { color: #f2a29d; }
+[data-theme="night"] .tok-num { color: #f2cb85; }
+
+/* ==========================================================================
+   友情链接（邻站转乘明信片） & 首页邻站速览条
+   ========================================================================== */
+
+.home-links-section {
+  margin-top: 4rem;
+}
+
+.home-links-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.mini-friend-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.72rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  transition: transform 300ms var(--ease), border-color 280ms ease;
+}
+
+.mini-friend-pill:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+}
+
+.links-group {
+  margin-bottom: 2.8rem;
+}
+
+.links-group-title {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin: 0 0 1.15rem;
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+}
+
+.links-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+.friend-card {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.25rem 1.35rem;
+  border-radius: 13px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  transition: transform 360ms var(--ease), border-color 320ms var(--ease);
+}
+
+.friend-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent);
+}
+
+.friend-avatar-box {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border-strong);
+  background: var(--accent-soft);
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mini-friend-pill .friend-avatar-box {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+}
+
+.friend-avatar-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.friend-monogram {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--accent);
+}
+
+.friend-body {
+  min-width: 0;
+  flex: 1;
+}
+
+.friend-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-bottom: 0.25rem;
+}
+
+.friend-name {
+  margin: 0;
+  font-size: 1.02rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.friend-card:hover .friend-name {
+  color: var(--accent);
+}
+
+.friend-tag {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  padding: 0.12rem 0.52rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  color: var(--coral);
+  white-space: nowrap;
+}
+
+.friend-desc {
+  margin: 0 0 0.48rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+.friend-domain {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--accent);
+  opacity: 0.82;
+}
+
+.exchange-card {
+  margin-top: 2.5rem;
+  padding: 1.65rem 1.85rem;
+  border-radius: 14px;
+  border: 1px dashed var(--border-strong);
+  background: var(--surface);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.exchange-title {
+  margin: 0 0 0.45rem;
+  font-size: 1.08rem;
+  font-weight: 500;
+}
+
+.exchange-code {
+  margin: 0.65rem 0 0;
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+}
+
+.exchange-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+@media (max-width: 860px) {
+  .home-links-strip,
+  .links-grid,
+  .exchange-card {
+    grid-template-columns: 1fr;
   }
 }

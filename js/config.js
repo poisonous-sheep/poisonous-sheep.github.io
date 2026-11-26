@@ -324,5 +324,56 @@ window.BLOG_CONFIG = {
       { label: "QQ 空间", url: "https://user.qzone.qq.com/3533382348/main" },
       { label: "GitHub", url: "https://github.com/poisonous-sheep" }
     ]
+  },
+
+  // 友情链接（保留原站洛谷与 GitHub 友链，并新增算法学习与拿不拿音乐同好邻站）
+  // 以后要添加新朋友的博客，只需要在 friendLinks 数组里加一项即可
+  friendLinks: [
+    {
+      name: "洛谷 Luogu",
+      desc: "计算机科学教育新生态，刷算法题与模板题的主站台。",
+      url: "https://www.luogu.com.cn",
+      avatar: "https://www.luogu.com.cn/favicon.ico",
+      monogram: "洛",
+      tag: "算法刷题",
+      group: "学习站台"
+    },
+    {
+      name: "GitHub",
+      desc: "全球最大的开源代码托管平台，本站的静态源码也停靠在这里。",
+      url: "https://github.com",
+      avatar: "https://github.githubassets.com/favicons/favicon.svg",
+      monogram: "GH",
+      tag: "开源仓库",
+      group: "学习站台"
+    },
+    {
+      name: "OI Wiki",
+      desc: "开源信息学竞赛知识库，数据结构、图论与动态规划随查手册。",
+      url: "https://oi-wiki.org",
+      avatar: "https://oi-wiki.org/favicon.ico",
+      monogram: "OI",
+      tag: "竞赛百科",
+      group: "学习站台"
+    },
+    {
+      name: "ヨルシカ Official",
+      desc: "n-buna 与 suis 的官方主页，文学、书信与透明感夏日的灵感源头。",
+      url: "https://yorushika.com",
+      avatar: "images/album-hana.jpg",
+      monogram: "夜",
+      tag: "音乐灵感",
+      group: "音乐与同好"
+    }
+  ],
+
+  // 申请交换友链时展示的「本站名片」
+  siteLinkCard: {
+    name: "小羊的小小窝",
+    author: "有毒的羊",
+    url: "https://poisonous-sheep.github.io/",
+    avatar: "https://poisonous-sheep.github.io/images/avatar.png",
+    desc: "游戏 + 学习 + 术力口！盛夏晴空、拿不拿实体唱片与算法笔记。",
+    issueUrl: "https://github.com/poisonous-sheep/poisonous-sheep.github.io/issues/new?title=申请交换友链&body=站点名称：%0A站点链接：%0A一句话简介：%0A头像链接："
   }
 };

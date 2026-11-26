@@ -12,9 +12,11 @@
   const gallery = Array.isArray(cfg.gallery) ? cfg.gallery : [];
   const whispers = Array.isArray(cfg.whispers) ? cfg.whispers : [];
   const heroWindows = Array.isArray(cfg.heroWindows) ? cfg.heroWindows : [];
+  const friendLinks = Array.isArray(cfg.friendLinks) ? cfg.friendLinks : [];
 
   const appEl = document.getElementById("app");
   const progressEl = document.getElementById("reading-progress");
+  const bgmRingEl = document.getElementById("bgm-scroll-ring");
   const themeToggleBtn = document.getElementById("theme-toggle");
   const themeLabelEl = document.getElementById("theme-label");
   const backToTopBtn = document.getElementById("back-to-top");
@@ -107,9 +109,34 @@
     applyTheme(saved);
 
     if (themeToggleBtn) {
-      themeToggleBtn.addEventListener("click", function () {
+      themeToggleBtn.addEventListener("click", function (e) {
         const current = document.documentElement.getAttribute("data-theme");
-        applyTheme(current === "night" ? "day" : "night");
+        const nextTheme = current === "night" ? "day" : "night";
+        const reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+        if (!document.startViewTransition || reduced) {
+          applyTheme(nextTheme);
+          return;
+        }
+
+        const rect = themeToggleBtn.getBoundingClientRect();
+        const x = e.clientX || (rect.left + rect.width / 2);
+        const y = e.clientY || (rect.top + rect.height / 2);
+        const maxR = Math.hypot(
+          Math.max(x, window.innerWidth - x),
+          Math.max(y, window.innerHeight - y)
+        );
+        document.documentElement.style.setProperty("--vt-x", x + "px");
+        document.documentElement.style.setProperty("--vt-y", y + "px");
+        document.documentElement.style.setProperty("--vt-r", Math.ceil(maxR) + "px");
+        document.documentElement.classList.add("theme-wiping");
+
+        const transition = document.startViewTransition(function () {
+          applyTheme(nextTheme);
+        });
+        transition.finished.finally(function () {
+          document.documentElement.classList.remove("theme-wiping");
+        });
       });
     }
   }
@@ -360,7 +387,32 @@
           '<a href="#/fragments" class="section-sub">查看全部 ' + fragments.length + " 张 →</a>" +
         "</div>" +
         '<div class="fragments-grid">' + recentFragments + "</div>" +
-      "</section>";
+      "</section>" +
+      (friendLinks.length > 0
+        ? '<section class="home-links-section" aria-labelledby="home-links-heading">' +
+            '<div class="section-head">' +
+              '<div class="section-title-group">' +
+                '<span class="section-num-bg" aria-hidden="true">05</span>' +
+                '<h2 id="home-links-heading" class="section-title">邻站友链 · 常用站点</h2>' +
+                '<span class="section-en">Neighbor Stations</span>' +
+              "</div>" +
+              '<a href="#/links" class="section-sub">查看全部 & 交换友链 →</a>' +
+            "</div>" +
+            '<div class="home-links-strip">' +
+              friendLinks.slice(0, 4).map(function (link) {
+                return (
+                  '<a href="' + escapeHtml(link.url) + '" target="_blank" rel="noopener noreferrer" class="mini-friend-pill reveal" data-cursor="VISIT">' +
+                    renderFriendAvatarHtml(link) +
+                    '<span style="min-width:0">' +
+                      '<span style="display:block;font-size:0.86rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escapeHtml(link.name) + "</span>" +
+                      '<span style="display:block;font-family:var(--font-mono);font-size:0.66rem;color:var(--text-muted)">' + escapeHtml(link.tag) + "</span>" +
+                    "</span>" +
+                  "</a>"
+                );
+              }).join("") +
+            "</div>" +
+          "</section>"
+        : "");
 
     const whisperBtn = document.getElementById("whisper-next");
     if (whisperBtn && whispers.length > 1) {
@@ -408,6 +460,7 @@
       });
     });
 
+    bindCdTiltEffects();
     observeReveals();
   }
 
@@ -527,6 +580,92 @@
       });
     });
 
+    bindCdTiltEffects();
+    observeReveals();
+  }
+
+  function renderFriendAvatarHtml(link) {
+    const mono = escapeHtml(link.monogram || (link.name || "友").slice(0, 1));
+    if (!link.avatar) {
+      return '<span class="friend-avatar-box"><span class="friend-monogram">' + mono + "</span></span>";
+    }
+    return (
+      '<span class="friend-avatar-box">' +
+        '<img src="' + escapeHtml(link.avatar) + '" alt="' + escapeHtml(link.name) + '" loading="lazy" onerror="this.style.display=\'none\';if(this.nextElementSibling)this.nextElementSibling.style.display=\'inline\';">' +
+        '<span class="friend-monogram" style="display:none">' + mono + "</span>" +
+      "</span>"
+    );
+  }
+
+  function renderLinks() {
+    const groups = Array.from(new Set(friendLinks.map(function (l) { return l.group || "邻站"; })));
+    const groupsHtml = groups.map(function (groupName) {
+      const items = friendLinks.filter(function (l) { return (l.group || "邻站") === groupName; });
+      const cards = items.map(function (link) {
+        let domain = link.url;
+        try {
+          domain = new URL(link.url).hostname;
+        } catch (_) {}
+        return (
+          '<a href="' + escapeHtml(link.url) + '" target="_blank" rel="noopener noreferrer" class="friend-card reveal" data-cursor="VISIT">' +
+            renderFriendAvatarHtml(link) +
+            '<div class="friend-body">' +
+              '<div class="friend-top">' +
+                '<h2 class="friend-name">' + escapeHtml(link.name) + "</h2>" +
+                '<span class="friend-tag">' + escapeHtml(link.tag || "友链") + "</span>" +
+              "</div>" +
+              '<p class="friend-desc">' + escapeHtml(link.desc || "") + "</p>" +
+              '<span class="friend-domain">' + escapeHtml(domain) + " ↗</span>" +
+            "</div>" +
+          "</a>"
+        );
+      }).join("");
+      return (
+        '<section class="links-group">' +
+          '<h2 class="links-group-title"><span>●</span><span>' + escapeHtml(groupName) + "</span></h2>" +
+          '<div class="links-grid">' + cards + "</div>" +
+        "</section>"
+      );
+    }).join("");
+
+    const card = cfg.siteLinkCard || {};
+    const snippet =
+      "名称：" + (card.name || "小羊的小小窝") + "\n" +
+      "链接：" + (card.url || "https://poisonous-sheep.github.io/") + "\n" +
+      "头像：" + (card.avatar || "https://poisonous-sheep.github.io/images/avatar.png") + "\n" +
+      "简介：" + (card.desc || "");
+
+    appEl.innerHTML =
+      '<div class="page-header-block">' +
+        '<h1 class="page-title">友情链接 · 邻站与常用站点</h1>' +
+        '<p class="page-desc">保留原站的洛谷与 GitHub 链接，也欢迎喜欢算法、术力口与拿不拿的朋友交换小站名片。</p>' +
+      "</div>" +
+      groupsHtml +
+      '<section class="exchange-card reveal">' +
+        "<div>" +
+          '<h2 class="exchange-title">交换友链 · 本站名片</h2>' +
+          '<p class="page-desc">欢迎在 GitHub 提 Issue 交换友链，或在 <code>js/config.js</code> 的 <code>friendLinks</code> 数组里直接新增。</p>' +
+          '<pre class="exchange-code" id="site-link-snippet">' + escapeHtml(snippet) + "</pre>" +
+        "</div>" +
+        '<div class="exchange-actions">' +
+          '<button type="button" class="btn-primary" id="copy-site-card">一键复制本站友链信息</button>' +
+          (card.issueUrl
+            ? '<a href="' + escapeHtml(card.issueUrl) + '" target="_blank" rel="noopener noreferrer" class="btn-ghost">在 GitHub 申请交换 ↗</a>'
+            : "") +
+        "</div>" +
+      "</section>";
+
+    const copyBtn = document.getElementById("copy-site-card");
+    if (copyBtn) {
+      copyBtn.addEventListener("click", function () {
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(snippet).then(function () {
+            showToast("已复制小羊的小小窝友链名片");
+          }).catch(function () {});
+        }
+      });
+    }
+
     observeReveals();
   }
 
@@ -561,6 +700,7 @@
       });
     });
 
+    bindCdTiltEffects();
     observeReveals();
   }
 
@@ -946,6 +1086,11 @@
             hits.push({ kind: "碎片", title: f.text.slice(0, 32) + "…", sub: f.date + " · " + f.route, action: function () { window.location.hash = "#/fragments"; } });
           }
         });
+        friendLinks.forEach(function (l) {
+          if ((l.name + l.desc + l.tag).toLowerCase().includes(q)) {
+            hits.push({ kind: "友链", title: l.name, sub: l.tag + " · " + l.desc, action: function () { window.open(l.url, "_blank", "noopener"); } });
+          }
+        });
       }
 
       if (hits.length === 0) {
@@ -1179,11 +1324,16 @@
     progressEl.classList.toggle("visible", isPost);
     if (!isPost) {
       progressEl.style.width = "0%";
+      if (bgmRingEl) bgmRingEl.style.strokeDashoffset = "132";
       return;
     }
     const docHeight = document.documentElement.scrollHeight - window.innerHeight;
     const pct = docHeight > 0 ? Math.min(100, Math.max(0, (scrollTop / docHeight) * 100)) : 0;
     progressEl.style.width = pct.toFixed(1) + "%";
+    if (bgmRingEl) {
+      const circumference = 132;
+      bgmRingEl.style.strokeDashoffset = (circumference * (1 - pct / 100)).toFixed(1);
+    }
 
     const tocLinks = document.querySelectorAll("[data-toc-target]");
     if (tocLinks.length > 0) {
@@ -1216,11 +1366,109 @@
     items.forEach(function (el) { observer.observe(el); });
   }
 
-  function handleRoute() {
-    closeAllModals();
-    const hash = window.location.hash || "#/";
-    window.scrollTo(0, 0);
+  /* ------------------------------------------------------------------------
+     6.5 初次进站帷幕、桌面端跟手光环、3D 实体 CD 倾斜反光
+     ------------------------------------------------------------------------ */
+  function initOpeningCurtain() {
+    const curtain = document.getElementById("opening-curtain");
+    if (!curtain) return;
+    const reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let seen = false;
+    try {
+      seen = sessionStorage.getItem("xiaoyang-curtain-seen") === "1";
+    } catch (_) {}
 
+    if (seen || reduced) {
+      curtain.classList.add("is-hidden");
+      return;
+    }
+    try {
+      sessionStorage.setItem("xiaoyang-curtain-seen", "1");
+    } catch (_) {}
+    setTimeout(function () {
+      curtain.classList.add("is-lifted");
+      setTimeout(function () { curtain.classList.add("is-hidden"); }, 720);
+    }, 360);
+  }
+
+  function initCursorRing() {
+    const ring = document.getElementById("cursor-ring");
+    const labelEl = document.getElementById("cursor-ring-label");
+    if (!ring) return;
+    const finePointer = window.matchMedia && window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+    const reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!finePointer || reduced) return;
+
+    let mx = -100, my = -100, rx = -100, ry = -100;
+    let rafActive = false;
+
+    function tick() {
+      rx += (mx - rx) * 0.2;
+      ry += (my - ry) * 0.2;
+      const w = ring.offsetWidth / 2;
+      const h = ring.offsetHeight / 2;
+      ring.style.transform = "translate3d(" + (rx - w).toFixed(1) + "px," + (ry - h).toFixed(1) + "px,0)";
+      if (Math.abs(mx - rx) > 0.2 || Math.abs(my - ry) > 0.2) {
+        requestAnimationFrame(tick);
+      } else {
+        rafActive = false;
+      }
+    }
+
+    document.addEventListener("mousemove", function (e) {
+      mx = e.clientX;
+      my = e.clientY;
+      ring.classList.add("is-visible");
+      if (!rafActive) {
+        rafActive = true;
+        requestAnimationFrame(tick);
+      }
+      const target = e.target.closest("[data-album-open],[data-lightbox-idx],[data-cursor],.featured-post-card,.timetable-link");
+      if (target) {
+        ring.classList.add("is-hover");
+        let label = target.getAttribute("data-cursor") || "";
+        if (!label) {
+          if (target.hasAttribute("data-album-open")) label = "OPEN";
+          else if (target.hasAttribute("data-lightbox-idx")) label = "VIEW";
+          else label = "READ";
+        }
+        if (labelEl) labelEl.textContent = label;
+      } else {
+        ring.classList.remove("is-hover");
+        if (labelEl) labelEl.textContent = "";
+      }
+    }, { passive: true });
+
+    document.addEventListener("mouseleave", function () {
+      ring.classList.remove("is-visible");
+    });
+  }
+
+  function bindCdTiltEffects() {
+    const finePointer = window.matchMedia && window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+    const reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!finePointer || reduced) return;
+
+    document.querySelectorAll(".cd-sleeve").forEach(function (sleeve) {
+      if (sleeve.dataset.tiltBound) return;
+      sleeve.dataset.tiltBound = "1";
+      sleeve.addEventListener("mousemove", function (e) {
+        const rect = sleeve.getBoundingClientRect();
+        const px = (e.clientX - rect.left) / rect.width;
+        const py = (e.clientY - rect.top) / rect.height;
+        const rotY = ((px - 0.5) * 9).toFixed(2);
+        const rotX = ((0.5 - py) * 9).toFixed(2);
+        sleeve.style.transform = "perspective(700px) rotateX(" + rotX + "deg) rotateY(" + rotY + "deg) translateY(-4px)";
+        sleeve.style.setProperty("--gx", (px * 100).toFixed(0) + "%");
+        sleeve.style.setProperty("--gy", (py * 100).toFixed(0) + "%");
+      });
+      sleeve.addEventListener("mouseleave", function () {
+        sleeve.style.transform = "";
+      });
+    });
+  }
+
+  function renderRouteBody(hash) {
     if (hash.startsWith("#/post/")) {
       updateActiveNav("home");
       renderPost(decodeURIComponent(hash.slice("#/post/".length)));
@@ -1236,6 +1484,9 @@
     } else if (hash === "#/archives") {
       updateActiveNav("archives");
       renderArchives();
+    } else if (hash === "#/links") {
+      updateActiveNav("links");
+      renderLinks();
     } else if (hash === "#/about") {
       updateActiveNav("about");
       renderAbout();
@@ -1244,6 +1495,21 @@
       renderHome();
     }
     updateReadingProgress();
+  }
+
+  function handleRoute(skipTransition) {
+    closeAllModals();
+    const hash = window.location.hash || "#/";
+    window.scrollTo(0, 0);
+    const reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (!skipTransition && document.startViewTransition && !reduced) {
+      document.startViewTransition(function () {
+        renderRouteBody(hash);
+      });
+    } else {
+      renderRouteBody(hash);
+    }
   }
 
   function initSiteMeta() {
@@ -1304,11 +1570,13 @@
     }).catch(function () {});
   });
 
-  window.addEventListener("hashchange", handleRoute);
+  window.addEventListener("hashchange", function () { handleRoute(false); });
   window.addEventListener("scroll", updateReadingProgress, { passive: true });
 
   initSiteMeta();
+  initOpeningCurtain();
+  initCursorRing();
   initTheme();
   initBgmWidget();
-  handleRoute();
+  handleRoute(true);
 })();

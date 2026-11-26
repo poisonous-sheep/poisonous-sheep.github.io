@@ -61,6 +61,60 @@
     return processed;
   }
 
+  function highlightCode(rawCode, lang) {
+    const normalized = String(lang || "").toLowerCase();
+    const isCStyle = /^(cpp|c\+\+|cc|c|js|javascript|ts)$/.test(normalized);
+    if (!isCStyle) return escapeHtml(rawCode);
+
+    const keywords = new Set([
+      "if", "else", "for", "while", "do", "switch", "case", "break", "continue",
+      "return", "struct", "class", "public", "private", "using", "namespace",
+      "const", "static", "inline", "signed", "unsigned", "void", "bool", "true",
+      "false", "nullptr", "null", "undefined", "function", "let", "var", "new",
+      "import", "export", "async", "await", "try", "catch", "sizeof", "typedef"
+    ]);
+    const types = new Set([
+      "int", "long", "double", "float", "char", "string", "ll", "std", "ios",
+      "vector", "queue", "stack", "deque", "map", "set", "pair", "cin", "cout",
+      "endl", "min", "max", "sort", "INF", "inf"
+    ]);
+
+    const tokenRe = /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|(^[ \t]*#[a-zA-Z_][^\n]*)|("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|\b(\d+(?:\.\d+)?(?:LL|ll|ULL|ull|f)?)\b|\b([A-Za-z_]\w*)\b/gm;
+    let out = "";
+    let lastIndex = 0;
+    let m;
+
+    while ((m = tokenRe.exec(rawCode)) !== null) {
+      if (m.index > lastIndex) {
+        out += escapeHtml(rawCode.slice(lastIndex, m.index));
+      }
+      const full = m[0];
+      if (m[1]) {
+        out += '<span class="tok-com">' + escapeHtml(full) + "</span>";
+      } else if (m[2]) {
+        out += '<span class="tok-prep">' + escapeHtml(full) + "</span>";
+      } else if (m[3]) {
+        out += '<span class="tok-str">' + escapeHtml(full) + "</span>";
+      } else if (m[4]) {
+        out += '<span class="tok-num">' + escapeHtml(full) + "</span>";
+      } else if (m[5]) {
+        if (keywords.has(full)) {
+          out += '<span class="tok-kw">' + escapeHtml(full) + "</span>";
+        } else if (types.has(full)) {
+          out += '<span class="tok-type">' + escapeHtml(full) + "</span>";
+        } else {
+          out += escapeHtml(full);
+        }
+      }
+      lastIndex = tokenRe.lastIndex;
+    }
+
+    if (lastIndex < rawCode.length) {
+      out += escapeHtml(rawCode.slice(lastIndex));
+    }
+    return out;
+  }
+
   function parseTableRow(line) {
     return line
       .trim()
@@ -98,7 +152,7 @@
               '<span class="code-lang">' + escapeHtml(lang) + "</span>" +
               '<button type="button" class="code-copy-btn" data-copy-code>复制代码</button>' +
             "</div>" +
-            "<pre><code>" + escapeHtml(codeLines.join("\n")) + "</code></pre>" +
+            "<pre><code>" + highlightCode(codeLines.join("\n"), lang) + "</code></pre>" +
           "</div>"
         );
         continue;
