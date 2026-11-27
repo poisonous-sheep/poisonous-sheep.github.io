@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="小羊的小小窝 — 有毒的羊的个人博客（游戏 + 学习 + 术力口），以早年 n-buna 与早期 Yorushika 唱片美学打造的盛夏青春个人站。">
+  <meta name="description" content="小羊的小小窝 — 有毒的羊的个人博客（游戏 + 学习 + 术力口），融合早年 n-buna 唱片美学与十四幕盛夏光影美术馆。">
   <title>小羊的小小窝 — 有毒的羊</title>
   <link rel="icon" href="favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,6 +16,7 @@
   <!-- 初次进站帷幕开场（参考拿不拿《カーテンコールが止む前に》落幕意象，每次会话仅轻启一次） -->
   <div id="opening-curtain" class="opening-curtain" aria-hidden="true">
     <div class="curtain-inner">
+      <span class="curtain-vertical">花と水飴、最終電車 · 十四幕夏末画册</span>
       <span class="curtain-seal">羊</span>
       <span class="curtain-title">小羊的小小窝</span>
       <span class="curtain-sub">SUMMER LINE · 2025–2026</span>
@@ -29,6 +30,9 @@
 
   <!-- 纸张微颗粒画册质感层 -->
   <div class="grain-overlay" aria-hidden="true"></div>
+
+  <!-- 画作 / 展幕主题色环境氛围光晕层 -->
+  <div id="ambient-wash" class="ambient-wash" aria-hidden="true"></div>
 
   <!-- 顶部文章阅读进度细线 -->
   <div id="reading-progress" class="reading-progress" aria-hidden="true"></div>
@@ -58,7 +62,7 @@
   <!-- 杂志刊头微信息带 -->
   <div class="masthead-bar">
     <div class="masthead-inner">
-      <span id="masthead-issue">VOL. 01 · SUMMER YOUTH ARCHIVE</span>
+      <span id="masthead-issue">VOL. 02 · SUMMER EXHIBITION ARCHIVE</span>
       <span id="masthead-coords">游戏 + 学习 + 术力口 · 盛夏终电晴空线</span>
     </div>
   </div>
@@ -114,20 +118,47 @@
   <!-- 主内容区 -->
   <main id="app" class="app-main" tabindex="-1"></main>
 
-  <!-- 页脚 -->
+  <!-- 页脚：盛夏电车交互线路图 -->
   <footer class="site-footer">
     <div class="footer-inner">
-      <div class="train-line-ornament" aria-hidden="true">
-        <span class="station-tag-mini">始発</span>
-        <span class="station-node active"></span>
-        <span class="station-rail"></span>
-        <span class="station-node sky"></span>
-        <span class="station-rail"></span>
-        <span class="station-node coral"></span>
-        <span class="station-tag-mini">終電</span>
-      </div>
+      <nav class="rail-footer-nav" aria-label="盛夏电车线路导航">
+        <a href="#/" class="rail-stop" data-route="home">
+          <span class="rail-node" aria-hidden="true"></span>
+          <span class="rail-name">始発 · 首页</span>
+        </a>
+        <span class="rail-track" aria-hidden="true"></span>
+        <a href="#/discography" class="rail-stop" data-route="discography">
+          <span class="rail-node" aria-hidden="true"></span>
+          <span class="rail-name">唱片架</span>
+        </a>
+        <span class="rail-track" aria-hidden="true"></span>
+        <a href="#/gallery" class="rail-stop" data-route="gallery">
+          <span class="rail-node" aria-hidden="true"></span>
+          <span class="rail-name">十四幕影集</span>
+        </a>
+        <span class="rail-track" aria-hidden="true"></span>
+        <a href="#/fragments" class="rail-stop" data-route="fragments">
+          <span class="rail-node" aria-hidden="true"></span>
+          <span class="rail-name">车票碎片</span>
+        </a>
+        <span class="rail-track" aria-hidden="true"></span>
+        <a href="#/archives" class="rail-stop" data-route="archives">
+          <span class="rail-node" aria-hidden="true"></span>
+          <span class="rail-name">归档</span>
+        </a>
+        <span class="rail-track" aria-hidden="true"></span>
+        <a href="#/links" class="rail-stop" data-route="links">
+          <span class="rail-node" aria-hidden="true"></span>
+          <span class="rail-name">友链</span>
+        </a>
+        <span class="rail-track" aria-hidden="true"></span>
+        <a href="#/about" class="rail-stop" data-route="about">
+          <span class="rail-node coral" aria-hidden="true"></span>
+          <span class="rail-name">終電 · 关于</span>
+        </a>
+      </nav>
       <p class="footer-copy" id="footer-copy">© 2025–2026 有毒的羊 · 小羊的小小窝</p>
-      <p class="footer-note">游戏 + 学习 + 术力口 · 花と水飴、最終電車</p>
+      <p class="footer-note">游戏 + 学习 + 术力口 · 花と水飴、最終電車 — 十四幕盛夏光影馆</p>
     </div>
   </footer>
 
@@ -169,7 +200,7 @@
   <!-- 专辑歌词本 / Liner Notes 弹窗 -->
   <div id="album-modal" class="overlay-modal" role="dialog" aria-modal="true" aria-hidden="true"></div>
 
-  <!-- 夏末影集全屏灯箱 -->
+  <!-- 夏末影集全屏暗房灯箱 -->
   <div id="lightbox-modal" class="overlay-modal lightbox-modal" role="dialog" aria-modal="true" aria-hidden="true"></div>
 
   <!-- 站内全站速查搜索弹窗 (Ctrl + K) -->

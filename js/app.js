@@ -1,8 +1,9 @@
 /**
- * 小羊的小小窝 — 主应用脚本（有毒的羊 · 盛夏青春实体唱片版）
- * 功能：三连电车车窗交互展柜、6 张实体封面 3×2 唱片架与动态光晕联动、
- *       信纸诗句条、夏末影集 8 图灯箱、打孔车票、文章自动目录(TOC)与 KaTeX 公式渲染、
- *       Ctrl+K 全站速查搜索、迷你封面 BGM 角标与轻柔吉他泛音氛围音。
+ * 小羊的小小窝 — 主应用脚本（有毒的羊 · 盛夏终电十四幕美术馆版）
+ * 功能：双模式三连电车车窗与鼠标视差、首页 35mm 十四幕画廊胶片长卷、
+ *       14 幕光影美术馆（4 幕时刻筛选 + 自适应画幅展墙/胶片长廊 + 主色氛围联动）、
+ *       暗房策展灯箱 2.0、6 张实体唱片 3×2 展柜、打孔车票、友链明信片、
+ *       KaTeX 公式与 C++ 高亮、Ctrl+K 全站速查、BGM 封面进度环与吉他泛音。
  */
 (function () {
   const cfg = window.BLOG_CONFIG || {};
@@ -10,11 +11,15 @@
   const fragments = Array.isArray(window.BLOG_FRAGMENTS) ? window.BLOG_FRAGMENTS : [];
   const albums = Array.isArray(cfg.albums) ? cfg.albums : [];
   const gallery = Array.isArray(cfg.gallery) ? cfg.gallery : [];
+  const exhibition = Array.isArray(cfg.exhibition) ? cfg.exhibition : [];
+  const exhibitionActs = cfg.exhibitionActs || {};
   const whispers = Array.isArray(cfg.whispers) ? cfg.whispers : [];
   const heroWindows = Array.isArray(cfg.heroWindows) ? cfg.heroWindows : [];
+  const heroWindowModes = cfg.heroWindowModes || null;
   const friendLinks = Array.isArray(cfg.friendLinks) ? cfg.friendLinks : [];
 
   const appEl = document.getElementById("app");
+  const ambientWashEl = document.getElementById("ambient-wash");
   const progressEl = document.getElementById("reading-progress");
   const bgmRingEl = document.getElementById("bgm-scroll-ring");
   const themeToggleBtn = document.getElementById("theme-toggle");
@@ -28,8 +33,13 @@
 
   let activeCategory = "全部";
   let activeFragmentTag = "全部";
+  let activeHeroWindowMode = "official";
+  let activeGalleryFilter = "all";
+  let activeGalleryView = "wall";
   let currentWhisperIdx = 0;
   let currentLightboxIdx = 0;
+  let currentLightboxKind = "exhibition";
+  let currentLightboxList = exhibition;
   let currentTrackIndex = 0;
   let bgmTrackList = [];
   let bgmRenderFn = null;
@@ -57,6 +67,16 @@
     }, 2000);
   }
 
+  function setAmbientWash(auraColor) {
+    if (!ambientWashEl) return;
+    if (!auraColor) {
+      ambientWashEl.classList.remove("is-active");
+      return;
+    }
+    ambientWashEl.style.setProperty("--ambient-wash", auraColor);
+    ambientWashEl.classList.add("is-active");
+  }
+
   function renderMathIfReady(container) {
     if (!container) return;
     if (typeof window.renderMathInElement === "function") {
@@ -70,7 +90,6 @@
         });
       } catch (_) {}
     } else {
-      // KaTeX defer 脚本尚未加载完时，稍后再尝试一次
       setTimeout(function () {
         if (typeof window.renderMathInElement === "function") {
           try {
@@ -142,7 +161,7 @@
   }
 
   /* ------------------------------------------------------------------------
-     2. 实体 CD 封套 & 三连电车车窗组件
+     2. 实体 CD 封套 & 双模式三连电车车窗组件
      ------------------------------------------------------------------------ */
   function renderCdStageHtml(album) {
     return (
@@ -161,13 +180,45 @@
     );
   }
 
-  function renderTripleWindowsHtml() {
-    const panes = heroWindows.map(function (win) {
+  function getActiveWindowModeSpec() {
+    if (heroWindowModes && heroWindowModes[activeHeroWindowMode]) {
+      return heroWindowModes[activeHeroWindowMode];
+    }
+    return {
+      id: "official",
+      badge: "n-buna 2014–2016",
+      hint: "悬停放大 · 点击翻开歌词本",
+      items: heroWindows.map(function (w) {
+        return {
+          actionType: "album",
+          targetId: w.albumId,
+          no: w.no,
+          year: w.year,
+          title: w.title,
+          label: w.label,
+          image: w.image,
+          featured: w.featured
+        };
+      })
+    };
+  }
+
+  function renderWindowPanesHtml(spec) {
+    return (spec.items || []).map(function (win) {
       const cls = win.featured ? "train-pane is-featured" : "train-pane";
+      const isEx = win.actionType === "exhibition";
+      const actionAttr = isEx
+        ? 'data-exhibition-open="' + escapeHtml(win.targetId) + '"'
+        : 'data-album-open="' + escapeHtml(win.targetId) + '"';
+      const cursorAttr = isEx ? 'data-cursor="VIEW"' : 'data-cursor="OPEN"';
+      const aria = isEx
+        ? "在暗房灯箱浏览 " + win.title
+        : "翻开 " + win.title + " 歌词本";
       return (
-        '<button type="button" class="' + cls + '" data-album-open="' + escapeHtml(win.albumId) + '" aria-label="翻开 ' + escapeHtml(win.title) + ' 歌词本">' +
+        '<button type="button" class="' + cls + '" ' + actionAttr + " " + cursorAttr + ' aria-label="' + escapeHtml(aria) + '">' +
           '<div class="train-pane-glass">' +
             '<img src="' + escapeHtml(win.image) + '" alt="' + escapeHtml(win.title) + '">' +
+            '<span class="pane-glint" aria-hidden="true"></span>' +
             '<span class="pane-rails" aria-hidden="true"></span>' +
             '<div class="pane-overlay">' +
               '<span class="pane-year">' + escapeHtml(win.no + " · " + win.year) + "</span>" +
@@ -177,23 +228,91 @@
         "</button>"
       );
     }).join("");
+  }
+
+  function renderTripleWindowsHtml() {
+    const spec = getActiveWindowModeSpec();
+    const officialCls = activeHeroWindowMode === "official" ? "window-mode-btn active" : "window-mode-btn";
+    const exCls = activeHeroWindowMode === "exhibition" ? "window-mode-btn active" : "window-mode-btn";
 
     return (
-      '<div class="triple-window-wall hero-stagger-2">' +
+      '<div class="triple-window-wall hero-stagger-2" id="triple-window-wall">' +
         '<div class="triple-window-top">' +
-          "<span>WINDOW GALLERY · 三连电车车窗</span>" +
-          '<span class="triple-window-top-right">n-buna 2014–2016</span>' +
+          '<div class="window-mode-tabs" role="tablist" aria-label="车窗画册模式切换">' +
+            '<button type="button" class="' + officialCls + '" data-window-mode="official">官方封面</button>' +
+            '<button type="button" class="' + exCls + '" data-window-mode="exhibition">十四幕精选</button>' +
+          "</div>" +
+          '<span class="triple-window-top-right" id="window-mode-badge">' + escapeHtml(spec.badge || "") + "</span>" +
         "</div>" +
-        '<div class="triple-windows-row">' + panes + "</div>" +
+        '<div class="triple-windows-row" id="triple-windows-row">' + renderWindowPanesHtml(spec) + "</div>" +
         '<div class="triple-window-foot">' +
           '<span class="triple-motto-inline">' +
             '<span class="motto-seal" aria-hidden="true">' + escapeHtml(cfg.sealText || "羊") + "</span>" +
             "<span>" + escapeHtml(cfg.verticalMotto || "") + "</span>" +
           "</span>" +
-          '<span class="triple-hint">悬停放大 · 点击翻开歌词本</span>' +
+          '<span class="triple-hint" id="window-mode-hint">' + escapeHtml(spec.hint || "") + "</span>" +
         "</div>" +
       "</div>"
     );
+  }
+
+  function bindTripleWindowInteractions() {
+    const wall = document.getElementById("triple-window-wall");
+    const row = document.getElementById("triple-windows-row");
+    if (!wall || !row) return;
+
+    function wirePaneClicks() {
+      row.querySelectorAll("[data-album-open]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          openAlbumModal(btn.getAttribute("data-album-open"));
+        });
+      });
+      row.querySelectorAll("[data-exhibition-open]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          openExhibitionLightboxById(btn.getAttribute("data-exhibition-open"));
+        });
+      });
+    }
+
+    wirePaneClicks();
+
+    wall.querySelectorAll("[data-window-mode]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        const nextMode = btn.getAttribute("data-window-mode");
+        if (!nextMode || nextMode === activeHeroWindowMode) return;
+        activeHeroWindowMode = nextMode;
+        wall.querySelectorAll("[data-window-mode]").forEach(function (b) {
+          b.classList.toggle("active", b.getAttribute("data-window-mode") === activeHeroWindowMode);
+        });
+        const spec = getActiveWindowModeSpec();
+        const badgeEl = document.getElementById("window-mode-badge");
+        const hintEl = document.getElementById("window-mode-hint");
+        row.classList.add("is-swapping");
+        setTimeout(function () {
+          row.innerHTML = renderWindowPanesHtml(spec);
+          if (badgeEl) badgeEl.textContent = spec.badge || "";
+          if (hintEl) hintEl.textContent = spec.hint || "";
+          row.classList.remove("is-swapping");
+          wirePaneClicks();
+        }, 160);
+      });
+    });
+
+    const finePointer = window.matchMedia && window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+    const reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (finePointer && !reduced) {
+      wall.addEventListener("mousemove", function (e) {
+        const rect = wall.getBoundingClientRect();
+        const dx = ((e.clientX - rect.left) / rect.width - 0.5) * -10;
+        const dy = ((e.clientY - rect.top) / rect.height - 0.5) * -8;
+        wall.style.setProperty("--px", dx.toFixed(1) + "px");
+        wall.style.setProperty("--py", dy.toFixed(1) + "px");
+      }, { passive: true });
+      wall.addEventListener("mouseleave", function () {
+        wall.style.setProperty("--px", "0px");
+        wall.style.setProperty("--py", "0px");
+      });
+    }
   }
 
   function syncPlayingAlbumCards() {
@@ -207,9 +326,108 @@
   }
 
   /* ------------------------------------------------------------------------
-     3. 首页渲染
+     3. 35mm 十四幕画廊胶片长卷组件
+     ------------------------------------------------------------------------ */
+  function renderFilmFrameHtml(item, idx, listKind) {
+    const aspectCls = item.aspect ? " is-" + item.aspect : "";
+    const metaRight = item.timeStamp || item.meta || "";
+    const artistOrFilm = item.artist ? "画师：" + item.artist : (item.film || "");
+    const openAttr = listKind === "official"
+      ? 'data-official-idx="' + idx + '"'
+      : 'data-ex-idx="' + idx + '"';
+    return (
+      '<button type="button" class="film-frame' + aspectCls + ' reveal" ' + openAttr +
+        ' data-aura="' + escapeHtml(item.aura || "") + '" data-cursor="VIEW">' +
+        '<div class="film-frame-media">' +
+          '<img src="' + escapeHtml(item.image) + '" alt="' + escapeHtml(item.title) + '" loading="lazy">' +
+          '<span class="film-frame-tag">' + escapeHtml(item.plateNo || item.no || "") + "</span>" +
+        "</div>" +
+        '<div class="film-frame-body">' +
+          '<div class="film-frame-meta">' +
+            "<span>" + escapeHtml(metaRight) + "</span>" +
+            "<span>" + escapeHtml(item.sourceBadge || item.film || "") + "</span>" +
+          "</div>" +
+          '<h3 class="film-frame-title">' + escapeHtml(item.title) + "</h3>" +
+          '<span class="film-frame-artist">' + escapeHtml(artistOrFilm) + "</span>" +
+        "</div>" +
+      "</button>"
+    );
+  }
+
+  function bindFilmstripControls(trackId, prevId, nextId, itemsList, listKind) {
+    const track = document.getElementById(trackId);
+    const prevBtn = document.getElementById(prevId);
+    const nextBtn = document.getElementById(nextId);
+    if (!track) return;
+    const targetList = Array.isArray(itemsList) ? itemsList : exhibition;
+    const targetKind = listKind || "exhibition";
+
+    if (prevBtn) {
+      prevBtn.addEventListener("click", function () {
+        track.scrollBy({ left: -Math.round(track.clientWidth * 0.72), behavior: "smooth" });
+      });
+    }
+    if (nextBtn) {
+      nextBtn.addEventListener("click", function () {
+        track.scrollBy({ left: Math.round(track.clientWidth * 0.72), behavior: "smooth" });
+      });
+    }
+
+    let isDown = false;
+    let startX = 0;
+    let startScroll = 0;
+    let dragMoved = false;
+
+    track.addEventListener("mousedown", function (e) {
+      if (e.button !== 0) return;
+      isDown = true;
+      dragMoved = false;
+      startX = e.pageX;
+      startScroll = track.scrollLeft;
+      track.classList.add("is-dragging");
+    });
+
+    window.addEventListener("mousemove", function (e) {
+      if (!isDown) return;
+      const dx = e.pageX - startX;
+      if (Math.abs(dx) > 6) dragMoved = true;
+      track.scrollLeft = startScroll - dx;
+    });
+
+    window.addEventListener("mouseup", function () {
+      if (!isDown) return;
+      isDown = false;
+      track.classList.remove("is-dragging");
+      setTimeout(function () { dragMoved = false; }, 40);
+    });
+
+    track.querySelectorAll(".film-frame").forEach(function (card) {
+      card.addEventListener("mouseenter", function () {
+        const aura = card.getAttribute("data-aura");
+        if (aura) setAmbientWash(aura);
+      });
+      card.addEventListener("click", function (e) {
+        if (dragMoved) {
+          e.preventDefault();
+          return;
+        }
+        const rawIdx = card.hasAttribute("data-ex-idx")
+          ? card.getAttribute("data-ex-idx")
+          : card.getAttribute("data-official-idx");
+        openLightboxFromList(targetList, Number(rawIdx || 0), targetKind);
+      });
+    });
+
+    track.addEventListener("mouseleave", function () {
+      setAmbientWash("");
+    });
+  }
+
+  /* ------------------------------------------------------------------------
+     4. 首页渲染
      ------------------------------------------------------------------------ */
   function renderHome() {
+    setAmbientWash("");
     const categories = ["全部"].concat(Array.from(new Set(posts.map(function (p) { return p.category; }))));
     const filtered = activeCategory === "全部"
       ? posts
@@ -222,13 +440,17 @@
     const activeTrack = bgmTrackList[currentTrackIndex];
     const activeAlbumId = activeTrack ? activeTrack.albumId : "";
 
+    const filmstripHtml = exhibition.map(function (item, idx) {
+      return renderFilmFrameHtml(item, idx, "exhibition");
+    }).join("");
+
     const albumsHtml = albums.map(function (album) {
       const swatches = (album.palette || []).map(function (hex) {
         return '<span class="swatch-dot" style="background:' + escapeHtml(hex) + '"></span>';
       }).join("");
       const playingCls = album.id === activeAlbumId ? " is-now-playing" : "";
       return (
-        '<button type="button" class="album-card reveal' + playingCls + '" data-album-open="' + escapeHtml(album.id) + '" data-aura="' + escapeHtml(album.aura || "") + '">' +
+        '<button type="button" class="album-card reveal' + playingCls + '" data-album-open="' + escapeHtml(album.id) + '" data-aura="' + escapeHtml(album.aura || "") + '" data-cursor="OPEN">' +
           renderCdStageHtml(album) +
           '<div class="album-card-meta">' +
             '<div class="album-card-top">' +
@@ -250,7 +472,7 @@
       const stats = window.estimateReadingStats ? window.estimateReadingStats(post.fallbackContent) : { minutes: 2 };
       return (
         '<li class="timetable-item reveal">' +
-          '<a href="#/post/' + encodeURIComponent(post.id) + '" class="timetable-link">' +
+          '<a href="#/post/' + encodeURIComponent(post.id) + '" class="timetable-link" data-cursor="READ">' +
             '<div class="timetable-thumb">' +
               '<img src="' + escapeHtml(post.cover || "images/hero-summer-station.svg") + '" alt="" loading="lazy">' +
             "</div>" +
@@ -271,26 +493,15 @@
       );
     }).join("");
 
-    const contactPreview = gallery.slice(0, 4).map(function (item, idx) {
-      return (
-        '<button type="button" class="film-plate reveal" data-lightbox-idx="' + idx + '">' +
-          '<div class="film-plate-media">' +
-            '<img src="' + escapeHtml(item.image) + '" alt="' + escapeHtml(item.title) + '" loading="lazy">' +
-          "</div>" +
-          '<div class="film-plate-meta">' +
-            "<span>" + escapeHtml(item.no) + "</span>" +
-            "<span>" + escapeHtml(item.meta) + "</span>" +
-          "</div>" +
-          '<h3 class="film-plate-title">' + escapeHtml(item.title) + "</h3>" +
-        "</button>"
-      );
-    }).join("");
-
     const recentFragments = fragments.slice(0, 4).map(renderTicketCardHtml).join("");
     const currentWhisper = whispers[currentWhisperIdx] || { text: "", source: "", stamp: "盛夏" };
 
     appEl.innerHTML =
-      '<section class="hero-section">' +
+      '<section class="hero-section has-tategaki">' +
+        '<aside class="hero-tategaki-rail" aria-hidden="true">' +
+          '<span class="tategaki-text">' + escapeHtml(cfg.verticalMotto || "夏末晴空、终电与透明的梦。") + "</span>" +
+          '<span class="tategaki-issue">XIV EXHIBITION</span>' +
+        "</aside>" +
         '<div class="hero-copy hero-stagger">' +
           '<div class="hero-tag">' +
             '<span class="hero-tag-dot" aria-hidden="true"></span>' +
@@ -302,14 +513,14 @@
           '<div class="hero-ledger">' +
             '<div class="ledger-cell"><span class="ledger-num">0' + posts.length + '</span><span class="ledger-label">站台文章</span></div>' +
             '<div class="ledger-cell"><span class="ledger-num">0' + albums.length + '</span><span class="ledger-label">实体专辑</span></div>' +
-            '<div class="ledger-cell"><span class="ledger-num">0' + gallery.length + '</span><span class="ledger-label">影集底片</span></div>' +
+            '<div class="ledger-cell"><span class="ledger-num">' + String(exhibition.length).padStart(2, "0") + '</span><span class="ledger-label">十四幕影集</span></div>' +
             '<div class="ledger-cell"><span class="ledger-num">0' + fragments.length + '</span><span class="ledger-label">打孔车票</span></div>' +
           "</div>" +
           '<div class="hero-actions">' +
+            '<a href="#/gallery" class="btn-primary">走进十四幕光影美术馆 →</a>' +
             (featured
-              ? '<a href="#/post/' + encodeURIComponent(featured.id) + '" class="btn-primary">开始阅读最新笔记 →</a>'
+              ? '<a href="#/post/' + encodeURIComponent(featured.id) + '" class="btn-ghost">阅读最新算法笔记</a>'
               : "") +
-            '<a href="#/discography" class="btn-ghost">逛一逛唱片架 ♪</a>' +
           "</div>" +
         "</div>" +
         renderTripleWindowsHtml() +
@@ -324,10 +535,29 @@
         "</div>" +
         '<button type="button" class="whisper-next-btn" id="whisper-next">换一张信签 ↻</button>' +
       "</div>" +
-      '<section id="album-shelf-section" class="album-shelf-section" aria-labelledby="albums-heading">' +
+      '<section class="filmstrip-section" aria-labelledby="exhibition-strip-heading">' +
         '<div class="section-head">' +
           '<div class="section-title-group">' +
             '<span class="section-num-bg" aria-hidden="true">01</span>' +
+            '<h2 id="exhibition-strip-heading" class="section-title">十四幕 · 拿不拿夏末画廊长卷</h2>' +
+            '<span class="section-en">XIV Plates · 35mm Filmstrip</span>' +
+          "</div>" +
+          '<a href="#/gallery" class="section-sub">打开全部 ' + exhibition.length + " 幕美术馆 →</a>" +
+        "</div>" +
+        '<div class="filmstrip-shell">' +
+          '<button type="button" class="filmstrip-nav-btn prev" id="home-strip-prev" aria-label="向左滚动胶片">‹</button>' +
+          '<button type="button" class="filmstrip-nav-btn next" id="home-strip-next" aria-label="向右滚动胶片">›</button>' +
+          '<div class="filmstrip-track" id="home-filmstrip-track">' + filmstripHtml + "</div>" +
+          '<div class="filmstrip-controls-foot">' +
+            "<span>ACT I 朝露昼青 → ACT II 无人站日暮 → ACT III 透明终电 → ACT IV 黎明萤火</span>" +
+            "<span>左右拖拽或滚轮浏览 · 点击进入暗房灯箱</span>" +
+          "</div>" +
+        "</div>" +
+      "</section>" +
+      '<section id="album-shelf-section" class="album-shelf-section" aria-labelledby="albums-heading">' +
+        '<div class="section-head">' +
+          '<div class="section-title-group">' +
+            '<span class="section-num-bg" aria-hidden="true">02</span>' +
             '<h2 id="albums-heading" class="section-title">拿不拿的灵感唱片架</h2>' +
             '<span class="section-en">Official Discography · 2014–2019</span>' +
           "</div>" +
@@ -338,14 +568,14 @@
       '<section aria-labelledby="posts-heading">' +
         '<div class="section-head">' +
           '<div class="section-title-group">' +
-            '<span class="section-num-bg" aria-hidden="true">02</span>' +
+            '<span class="section-num-bg" aria-hidden="true">03</span>' +
             '<h2 id="posts-heading" class="section-title">站台时刻表 · 我的博客文章</h2>' +
             '<span class="section-en">Algorithm & Daily Notes</span>' +
           "</div>" +
           '<span class="section-sub">' + filtered.length + " 篇文章</span>" +
         "</div>" +
         (featured
-          ? '<a href="#/post/' + encodeURIComponent(featured.id) + '" class="featured-post-card reveal">' +
+          ? '<a href="#/post/' + encodeURIComponent(featured.id) + '" class="featured-post-card reveal" data-cursor="READ">' +
               '<div class="featured-cover"><img src="' + escapeHtml(featured.cover) + '" alt="' + escapeHtml(featured.title) + '"></div>' +
               "<div>" +
                 '<div class="featured-badge">● LATEST POST · 最新更新</div>' +
@@ -365,17 +595,6 @@
           }).join("") +
         "</div>" +
         '<ul class="timetable-list">' + listHtml + "</ul>" +
-      "</section>" +
-      '<section class="gallery-preview-section" aria-labelledby="gallery-heading">' +
-        '<div class="section-head">' +
-          '<div class="section-title-group">' +
-            '<span class="section-num-bg" aria-hidden="true">03</span>' +
-            '<h2 id="gallery-heading" class="section-title">夏末影集 · 35mm 底片</h2>' +
-            '<span class="section-en">Contact Sheet</span>' +
-          "</div>" +
-          '<a href="#/gallery" class="section-sub">进入全部 ' + gallery.length + " 张展板 →</a>" +
-        "</div>" +
-        '<div class="contact-strip">' + contactPreview + "</div>" +
       "</section>" +
       '<section class="fragments-preview-section" aria-labelledby="frag-heading">' +
         '<div class="section-head">' +
@@ -405,7 +624,7 @@
                     renderFriendAvatarHtml(link) +
                     '<span style="min-width:0">' +
                       '<span style="display:block;font-size:0.86rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escapeHtml(link.name) + "</span>" +
-                      '<span style="display:block;font-family:var(--font-mono);font-size:0.66rem;color:var(--text-muted)">' + escapeHtml(link.tag) + "</span>" +
+                      '<span style="display:block;font-family:var(--font-mono);font-size:0.66rem;color:var(--text-muted)">' + escapeHtml(link.tag || "友链") + "</span>" +
                     "</span>" +
                   "</a>"
                 );
@@ -434,8 +653,11 @@
       });
     }
 
+    bindTripleWindowInteractions();
+    bindFilmstripControls("home-filmstrip-track", "home-strip-prev", "home-strip-next", exhibition, "exhibition");
+
     const shelfEl = document.getElementById("album-shelf-section");
-    appEl.querySelectorAll("[data-album-open]").forEach(function (card) {
+    appEl.querySelectorAll(".album-card[data-album-open]").forEach(function (card) {
       card.addEventListener("click", function () {
         openAlbumModal(card.getAttribute("data-album-open"));
       });
@@ -451,12 +673,6 @@
       btn.addEventListener("click", function () {
         activeCategory = btn.getAttribute("data-cat") || "全部";
         renderHome();
-      });
-    });
-
-    appEl.querySelectorAll("[data-lightbox-idx]").forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        openLightbox(Number(btn.getAttribute("data-lightbox-idx")));
       });
     });
 
@@ -481,7 +697,7 @@
   }
 
   /* ------------------------------------------------------------------------
-     4. 唱片架 / 影集 / 车票碎片 / 归档 / 关于 / 文章详情
+     5. 唱片架 / 十四幕美术馆 / 友链 / 碎片 / 归档 / 关于 / 文章详情
      ------------------------------------------------------------------------ */
   function isCurrentBgmTrack(albumId, track) {
     const active = bgmTrackList[currentTrackIndex];
@@ -510,7 +726,24 @@
     });
   }
 
+  function selectTrackByTitle(albumId, title) {
+    if (!title) return;
+    const flatIdx = bgmTrackList.findIndex(function (item) {
+      return (!albumId || item.albumId === albumId) && item.title === title;
+    });
+    const fallbackIdx = flatIdx !== -1 ? flatIdx : bgmTrackList.findIndex(function (item) {
+      return item.title === title;
+    });
+    if (fallbackIdx === -1) return;
+    currentTrackIndex = fallbackIdx;
+    const active = bgmTrackList[currentTrackIndex];
+    if (bgmRenderFn) bgmRenderFn(Boolean(active && active.audioUrl));
+    syncPlayingAlbumCards();
+    showToast("已联动曲目：" + title);
+  }
+
   function renderDiscography() {
+    setAmbientWash("");
     const timelineHtml = albums.map(function (a) {
       return '<button type="button" class="timeline-jump" data-jump-album="disc-' + escapeHtml(a.id) + '">' + escapeHtml(a.year.slice(0, 4)) + " · " + escapeHtml(a.titleZh) + "</button>";
     }).join("<span>→</span>");
@@ -598,6 +831,7 @@
   }
 
   function renderLinks() {
+    setAmbientWash("");
     const groups = Array.from(new Set(friendLinks.map(function (l) { return l.group || "邻站"; })));
     const groupsHtml = groups.map(function (groupName) {
       const items = friendLinks.filter(function (l) { return (l.group || "邻站") === groupName; });
@@ -669,42 +903,198 @@
     observeReveals();
   }
 
+  function getActiveGalleryItems() {
+    if (activeGalleryFilter === "official") return gallery;
+    if (activeGalleryFilter === "all") return exhibition;
+    return exhibition.filter(function (item) { return item.act === activeGalleryFilter; });
+  }
+
+  function getActBannerInfo() {
+    if (activeGalleryFilter === "official") {
+      return {
+        quote: "「从 2014 晴空车厢到 2019 斯德哥尔摩书信——收录 6 张官方实体封面与 2 幅原创站台画作。」",
+        time: "OFFICIAL JACKETS · 2014–2019",
+        aura: "rgba(61, 154, 226, 0.14)"
+      };
+    }
+    const act = exhibitionActs[activeGalleryFilter];
+    if (act) {
+      const isNight = document.documentElement.getAttribute("data-theme") === "night";
+      return {
+        quote: "「" + act.epigraph + "」",
+        time: act.no + " · " + act.titleEn + " · " + act.timeRange,
+        aura: isNight ? act.auraNight : act.auraDay
+      };
+    }
+    return {
+      quote: "「从朝露、昼青、无人站夕暮、终电花火到凌晨四点的萤火——按盛夏一天的时间线排列的十四幕光影。」",
+      time: "FULL EXHIBITION · XIV PLATES · 06:00 → 05:00",
+      aura: ""
+    };
+  }
+
   function renderGallery() {
-    const plates = gallery.map(function (item, idx) {
-      const spanCls = item.span === "wide" ? "film-plate wide reveal" : "film-plate reveal";
+    const items = getActiveGalleryItems();
+    const isOfficial = activeGalleryFilter === "official";
+    const listKind = isOfficial ? "official" : "exhibition";
+    const actSpec = getActBannerInfo();
+    setAmbientWash(actSpec.aura);
+
+    const actButtons = [
+      { id: "all", label: "全部 " + exhibition.length + " 幕" },
+      { id: "morning", label: "ACT I 朝露与昼青" },
+      { id: "dusk", label: "ACT II 无人站与日暮" },
+      { id: "final-train", label: "ACT III 透明哀歌与终电" },
+      { id: "predawn", label: "ACT IV 黎明与萤火" },
+      { id: "official", label: "官方实体封面 (" + gallery.length + ")" }
+    ];
+
+    const filterHtml = actButtons.map(function (btn) {
+      const cls = btn.id === activeGalleryFilter ? "act-pill active" : "act-pill";
       return (
-        '<button type="button" class="' + spanCls + '" data-lightbox-idx="' + idx + '">' +
-          '<div class="film-plate-media">' +
-            '<img src="' + escapeHtml(item.image) + '" alt="' + escapeHtml(item.title) + '" loading="lazy">' +
-          "</div>" +
-          '<div class="film-plate-meta">' +
-            "<span>" + escapeHtml(item.no + " · " + item.film) + "</span>" +
-            "<span>" + escapeHtml(item.meta) + "</span>" +
-          "</div>" +
-          '<h2 class="film-plate-title">' + escapeHtml(item.title) + "</h2>" +
-          '<p class="film-plate-caption">' + escapeHtml(item.caption) + "</p>" +
+        '<button type="button" class="' + cls + '" data-gallery-act="' + escapeHtml(btn.id) + '">' +
+          '<span class="act-pill-dot" aria-hidden="true"></span>' +
+          "<span>" + escapeHtml(btn.label) + "</span>" +
         "</button>"
       );
     }).join("");
 
+    const viewSwitchHtml =
+      '<div class="exhibition-view-switch" role="tablist" aria-label="画廊视图切换">' +
+        '<button type="button" class="view-switch-btn' + (activeGalleryView === "wall" ? " active" : "") + '" data-gallery-view="wall">展墙视图</button>' +
+        '<button type="button" class="view-switch-btn' + (activeGalleryView === "reel" ? " active" : "") + '" data-gallery-view="reel">胶片长廊</button>' +
+      "</div>";
+
+    let contentHtml = "";
+    if (activeGalleryView === "reel") {
+      const reelFrames = items.map(function (item, idx) {
+        return renderFilmFrameHtml(item, idx, listKind);
+      }).join("");
+      contentHtml =
+        '<div class="filmstrip-shell exhibition-reel-wrap">' +
+          '<button type="button" class="filmstrip-nav-btn prev" id="gallery-reel-prev" aria-label="向左滚动">‹</button>' +
+          '<button type="button" class="filmstrip-nav-btn next" id="gallery-reel-next" aria-label="向右滚动">›</button>' +
+          '<div class="filmstrip-track exhibition-reel" id="gallery-reel-track">' + reelFrames + "</div>" +
+          '<div class="filmstrip-controls-foot">' +
+            "<span>35MM CONTACT REEL · 共 " + items.length + " 帧展品</span>" +
+            "<span>点击任意画面进入策展暗房灯箱</span>" +
+          "</div>" +
+        "</div>";
+    } else {
+      let landscapeRun = 0;
+      const wallCards = items.map(function (item, idx) {
+        const aspect = item.aspect || (item.span === "wide" ? "landscape" : "square");
+        let spanCls = "is-" + aspect;
+        if (aspect === "landscape") {
+          landscapeRun += 1;
+          if (idx === 0 || landscapeRun % 3 === 1) spanCls += " is-hero-span";
+        }
+        const swatches = (item.palette || []).map(function (hex) {
+          return '<span class="swatch-dot" style="background:' + escapeHtml(hex) + '" title="' + escapeHtml(hex) + '"></span>';
+        }).join("");
+        const sourcePill = item.sourceUrl
+          ? '<a href="' + escapeHtml(item.sourceUrl) + '" target="_blank" rel="noopener noreferrer" class="ex-source-pill" data-ext-link="1" data-cursor="EXT">' + escapeHtml(item.sourceBadge || "原作出处") + " ↗</a>"
+          : '<span class="ex-source-pill">' + escapeHtml(item.sourceBadge || item.film || "馆藏底片") + "</span>";
+        const trackBtn = item.linkedTrack
+          ? '<button type="button" class="ex-track-btn" data-track-album="' + escapeHtml(item.linkedTrack.albumId || "") + '" data-track-title="' + escapeHtml(item.linkedTrack.title) + '" data-cursor="PLAY">♪ ' + escapeHtml(item.linkedTrack.title) + "</button>"
+          : "";
+
+        return (
+          '<article class="ex-card ' + spanCls + ' reveal" tabindex="0" role="button" data-gallery-idx="' + idx + '" data-aura="' + escapeHtml(item.aura || "") + '" data-cursor="VIEW">' +
+            '<div class="ex-frame">' +
+              '<img src="' + escapeHtml(item.image) + '" alt="' + escapeHtml(item.title) + '" loading="lazy">' +
+              '<span class="ex-plate-badge">' + escapeHtml(item.plateNo || item.no || "") + "</span>" +
+            "</div>" +
+            '<div class="ex-plaque">' +
+              '<div class="ex-plaque-top">' +
+                "<span>" + escapeHtml(item.actLabel || item.film || "") + "</span>" +
+                "<span>" + escapeHtml(item.timeStamp || item.meta || "") + "</span>" +
+              "</div>" +
+              '<h2 class="ex-plaque-title">' + escapeHtml(item.title) + "</h2>" +
+              (item.artist
+                ? '<span class="ex-plaque-artist">画师：' + escapeHtml(item.artist) + "</span>"
+                : "") +
+              '<p class="ex-plaque-caption">' + escapeHtml(item.caption || "") + "</p>" +
+              '<div class="ex-plaque-foot">' +
+                '<div class="ex-plaque-actions">' + sourcePill + trackBtn + "</div>" +
+                '<div class="album-swatches" aria-hidden="true">' + swatches + "</div>" +
+              "</div>" +
+            "</div>" +
+          "</article>"
+        );
+      }).join("");
+      contentHtml = '<div class="exhibition-wall">' + wallCards + "</div>";
+    }
+
     appEl.innerHTML =
       '<div class="page-header-block">' +
-        '<h1 class="page-title">夏末影集</h1>' +
-        '<p class="page-desc">6 张珍藏实体专辑封面与 2 张临海站/黎明原画展板，点击任意画面开启全屏灯箱。</p>' +
+        '<h1 class="page-title">夏末影集 · 十四幕光影美术馆</h1>' +
+        '<p class="page-desc">收录 14 幅早年 n-buna 关联画作与 8 张官方实体封面/原创画幅。按盛夏一天的时间流动策展，支持画师溯源、色板采样与右下角曲目联动。</p>' +
       "</div>" +
-      '<div class="gallery-grid">' + plates + "</div>";
+      '<div class="exhibition-toolbar">' +
+        '<div class="exhibition-act-pills" role="tablist" aria-label="展厅幕次筛选">' + filterHtml + "</div>" +
+        viewSwitchHtml +
+      "</div>" +
+      '<div class="exhibition-act-epigraph">' +
+        '<p class="epigraph-quote">' + escapeHtml(actSpec.quote) + "</p>" +
+        '<span class="epigraph-time">' + escapeHtml(actSpec.time) + "</span>" +
+      "</div>" +
+      contentHtml;
 
-    appEl.querySelectorAll("[data-lightbox-idx]").forEach(function (btn) {
+    appEl.querySelectorAll("[data-gallery-act]").forEach(function (btn) {
       btn.addEventListener("click", function () {
-        openLightbox(Number(btn.getAttribute("data-lightbox-idx")));
+        activeGalleryFilter = btn.getAttribute("data-gallery-act") || "all";
+        renderGallery();
       });
     });
 
-    bindCdTiltEffects();
+    appEl.querySelectorAll("[data-gallery-view]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        activeGalleryView = btn.getAttribute("data-gallery-view") || "wall";
+        renderGallery();
+      });
+    });
+
+    if (activeGalleryView === "reel") {
+      bindFilmstripControls("gallery-reel-track", "gallery-reel-prev", "gallery-reel-next", items, listKind);
+    } else {
+      appEl.querySelectorAll(".ex-card").forEach(function (card) {
+        card.addEventListener("mouseenter", function () {
+          const aura = card.getAttribute("data-aura");
+          if (aura) setAmbientWash(aura);
+        });
+        card.addEventListener("mouseleave", function () {
+          setAmbientWash(actSpec.aura);
+        });
+        card.addEventListener("click", function (e) {
+          if (e.target.closest("[data-ext-link]") || e.target.closest("[data-track-title]")) return;
+          openLightboxFromList(items, Number(card.getAttribute("data-gallery-idx")), listKind);
+        });
+        card.addEventListener("keydown", function (e) {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            openLightboxFromList(items, Number(card.getAttribute("data-gallery-idx")), listKind);
+          }
+        });
+      });
+
+      appEl.querySelectorAll("[data-ext-link]").forEach(function (a) {
+        a.addEventListener("click", function (e) { e.stopPropagation(); });
+      });
+
+      appEl.querySelectorAll("[data-track-title]").forEach(function (btn) {
+        btn.addEventListener("click", function (e) {
+          e.stopPropagation();
+          selectTrackByTitle(btn.getAttribute("data-track-album"), btn.getAttribute("data-track-title"));
+        });
+      });
+    }
+
     observeReveals();
   }
 
   function renderFragments() {
+    setAmbientWash("");
     const tags = ["全部"].concat(Array.from(new Set(fragments.map(function (f) { return f.tag || "随记"; }))));
     const filtered = activeFragmentTag === "全部"
       ? fragments
@@ -734,6 +1124,7 @@
   }
 
   function renderArchives() {
+    setAmbientWash("");
     let totalChars = 0;
     let totalMinutes = 0;
     posts.forEach(function (p) {
@@ -753,7 +1144,7 @@
     const html = years.map(function (year) {
       const rows = grouped[year].map(function (p) {
         return (
-          '<a href="#/post/' + encodeURIComponent(p.id) + '" class="archive-row reveal">' +
+          '<a href="#/post/' + encodeURIComponent(p.id) + '" class="archive-row reveal" data-cursor="READ">' +
             '<span class="archive-row-left">' +
               '<span class="archive-row-date">' + escapeHtml(p.date) + "</span>" +
               "<span>" + escapeHtml(p.title) + "</span>" +
@@ -774,7 +1165,7 @@
         '<div class="stat-card"><div class="stat-value">' + posts.length + '</div><div class="stat-label">PUBLISHED · 文章</div></div>' +
         '<div class="stat-card"><div class="stat-value">' + totalChars.toLocaleString() + '</div><div class="stat-label">WORDS · 总字数</div></div>' +
         '<div class="stat-card"><div class="stat-value">' + totalMinutes + 'm</div><div class="stat-label">READING · 预计阅读</div></div>' +
-        '<div class="stat-card"><div class="stat-value">' + albums.length + '</div><div class="stat-label">ALBUMS · 实体唱片</div></div>' +
+        '<div class="stat-card"><div class="stat-value">' + exhibition.length + '</div><div class="stat-label">PLATES · 十四幕影集</div></div>' +
       "</div>" +
       html;
 
@@ -782,6 +1173,7 @@
   }
 
   function renderAbout() {
+    setAmbientWash("");
     const about = cfg.about || {};
     const paragraphs = (about.paragraphs || []).map(function (p) { return "<p>" + escapeHtml(p) + "</p>"; }).join("");
     const nowItems = (about.nowBoard || []).map(function (item) {
@@ -857,6 +1249,7 @@
   }
 
   async function renderPost(postId) {
+    setAmbientWash("");
     const idx = posts.findIndex(function (p) { return p.id === postId; });
     if (idx === -1) {
       appEl.innerHTML =
@@ -948,7 +1341,7 @@
   }
 
   /* ------------------------------------------------------------------------
-     5. 弹窗：歌词本 / 影集灯箱 / 全站搜索 (Ctrl+K)
+     6. 弹窗：歌词本 / 暗房策展灯箱 2.0 / 全站速查搜索 (Ctrl+K)
      ------------------------------------------------------------------------ */
   function openAlbumModal(albumId) {
     const album = albums.find(function (a) { return a.id === albumId; });
@@ -1008,25 +1401,82 @@
     });
   }
 
+  function openExhibitionLightboxById(itemId) {
+    const idx = exhibition.findIndex(function (x) { return x.id === itemId; });
+    openLightboxFromList(exhibition, idx === -1 ? 0 : idx, "exhibition");
+  }
+
   function openLightbox(index) {
-    if (!lightboxModalEl || gallery.length === 0) return;
-    currentLightboxIdx = (index + gallery.length) % gallery.length;
-    const item = gallery[currentLightboxIdx];
+    openLightboxFromList(gallery, index, "official");
+  }
+
+  function openLightboxFromList(list, index, kind) {
+    if (!lightboxModalEl || !Array.isArray(list) || list.length === 0) return;
+    currentLightboxList = list;
+    currentLightboxKind = kind || "exhibition";
+    currentLightboxIdx = (index + list.length) % list.length;
+    const item = list[currentLightboxIdx];
+
+    const counterLabel = (item.plateNo || item.no || "") + " · " +
+      String(currentLightboxIdx + 1).padStart(2, "0") + " / " +
+      String(list.length).padStart(2, "0");
+
+    const paletteHtml = (item.palette || []).map(function (hex) {
+      return (
+        '<button type="button" class="lb-palette-chip" data-lb-copy="' + escapeHtml(hex) + '" title="点击复制色值">' +
+          '<span class="swatch-dot" style="background:' + escapeHtml(hex) + '"></span>' +
+          "<span>" + escapeHtml(hex) + "</span>" +
+        "</button>"
+      );
+    }).join("");
+
+    const thumbsHtml = list.map(function (thumb, tIdx) {
+      const activeCls = tIdx === currentLightboxIdx ? "lb-thumb-btn active" : "lb-thumb-btn";
+      return (
+        '<button type="button" class="' + activeCls + '" data-lb-jump="' + tIdx + '" title="' + escapeHtml(thumb.title) + '">' +
+          '<img src="' + escapeHtml(thumb.image) + '" alt="' + escapeHtml(thumb.title) + '">' +
+        "</button>"
+      );
+    }).join("");
+
+    const extLabel = item.sourceType === "x" ? "前往 X 画师主页 ↗" : "在 Pixiv 查看原作 ↗";
 
     lightboxModalEl.innerHTML =
-      '<div class="modal-card lightbox-card">' +
-        '<button type="button" class="modal-close" id="lightbox-close" aria-label="关闭灯箱">×</button>' +
-        '<div class="lightbox-media"><img src="' + escapeHtml(item.image) + '" alt="' + escapeHtml(item.title) + '"></div>' +
-        '<div class="lightbox-foot">' +
-          "<div>" +
-            '<div class="film-plate-meta" style="margin-top:0"><span>' + escapeHtml(item.no + " · " + item.film + " · " + item.meta) + "</span></div>" +
-            '<h3 class="film-plate-title">' + escapeHtml(item.title) + "</h3>" +
-            '<p class="film-plate-caption">' + escapeHtml(item.caption) + "</p>" +
+      '<div class="modal-card lightbox-dossier">' +
+        '<button type="button" class="modal-close" id="lightbox-close" aria-label="关闭暗房灯箱">×</button>' +
+        '<div class="lb-dossier-grid">' +
+          '<div class="lb-stage-col">' +
+            '<div class="lb-stage" style="--lb-aura:' + escapeHtml(item.aura || "rgba(61,154,226,0.16)") + '">' +
+              '<span class="lb-counter-pill">' + escapeHtml(counterLabel) + "</span>" +
+              '<button type="button" class="lb-stage-arrow prev" id="lb-prev" aria-label="上一幅">‹</button>' +
+              '<img src="' + escapeHtml(item.image) + '" alt="' + escapeHtml(item.title) + '">' +
+              '<button type="button" class="lb-stage-arrow next" id="lb-next" aria-label="下一幅">›</button>' +
+            "</div>" +
+            '<div class="lb-thumb-strip" id="lb-thumb-strip">' + thumbsHtml + "</div>" +
           "</div>" +
-          '<div class="lightbox-nav">' +
-            '<button type="button" class="btn-ghost" id="lb-prev">← 上一张</button>' +
-            '<button type="button" class="btn-ghost" id="lb-next">下一张 →</button>' +
-          "</div>" +
+          '<aside class="lb-info-panel">' +
+            '<div class="lb-act-meta">' +
+              "<span>" + escapeHtml(item.actLabel || item.film || "EXHIBITION") + "</span>" +
+              "<span>" + escapeHtml(item.timeStamp || item.meta || "") + "</span>" +
+            "</div>" +
+            '<h2 class="lb-title">' + escapeHtml(item.title) + "</h2>" +
+            (item.artist
+              ? '<div class="lb-artist">画师：' + escapeHtml(item.artist) + "</div>"
+              : "") +
+            '<div class="lb-source-box">' + escapeHtml(item.sourceNote || ((item.film || "") + " · " + (item.meta || ""))) + "</div>" +
+            '<p class="lb-caption">' + escapeHtml(item.caption || "") + "</p>" +
+            (paletteHtml
+              ? '<div class="lb-palette-row">' + paletteHtml + "</div>"
+              : "") +
+            '<div class="lb-actions">' +
+              (item.linkedTrack
+                ? '<button type="button" class="btn-primary" id="lb-play-linked">♪ 联动曲目：' + escapeHtml(item.linkedTrack.title) + "</button>"
+                : "") +
+              (item.sourceUrl
+                ? '<a href="' + escapeHtml(item.sourceUrl) + '" target="_blank" rel="noopener noreferrer" class="btn-ghost">' + escapeHtml(extLabel) + "</a>"
+                : "") +
+            "</div>" +
+          "</aside>" +
         "</div>" +
       "</div>";
 
@@ -1036,9 +1486,42 @@
     const closeBtn = document.getElementById("lightbox-close");
     const prevBtn = document.getElementById("lb-prev");
     const nextBtn = document.getElementById("lb-next");
+    const linkedBtn = document.getElementById("lb-play-linked");
+
     if (closeBtn) closeBtn.addEventListener("click", closeAllModals);
-    if (prevBtn) prevBtn.addEventListener("click", function () { openLightbox(currentLightboxIdx - 1); });
-    if (nextBtn) nextBtn.addEventListener("click", function () { openLightbox(currentLightboxIdx + 1); });
+    if (prevBtn) prevBtn.addEventListener("click", function () {
+      openLightboxFromList(currentLightboxList, currentLightboxIdx - 1, currentLightboxKind);
+    });
+    if (nextBtn) nextBtn.addEventListener("click", function () {
+      openLightboxFromList(currentLightboxList, currentLightboxIdx + 1, currentLightboxKind);
+    });
+    if (linkedBtn && item.linkedTrack) {
+      linkedBtn.addEventListener("click", function () {
+        selectTrackByTitle(item.linkedTrack.albumId, item.linkedTrack.title);
+      });
+    }
+
+    lightboxModalEl.querySelectorAll("[data-lb-jump]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        openLightboxFromList(currentLightboxList, Number(btn.getAttribute("data-lb-jump")), currentLightboxKind);
+      });
+    });
+
+    lightboxModalEl.querySelectorAll("[data-lb-copy]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        const hex = btn.getAttribute("data-lb-copy");
+        if (navigator.clipboard && hex) {
+          navigator.clipboard.writeText(hex).then(function () {
+            showToast("已复制色值 " + hex);
+          }).catch(function () {});
+        }
+      });
+    });
+
+    const activeThumb = lightboxModalEl.querySelector(".lb-thumb-btn.active");
+    if (activeThumb && activeThumb.scrollIntoView) {
+      activeThumb.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+    }
   }
 
   function openSearchModal() {
@@ -1047,7 +1530,7 @@
       '<div class="modal-card search-card">' +
         '<div class="search-input-row">' +
           '<span style="color:var(--accent)">🔍</span>' +
-          '<input type="search" id="global-search-input" class="search-input" placeholder="搜索文章、6 张专辑、曲目或车票碎片…" autocomplete="off">' +
+          '<input type="search" id="global-search-input" class="search-input" placeholder="搜索文章、十四幕画作、画师/Pixiv ID、专辑曲目或友链…" autocomplete="off">' +
           '<button type="button" class="bgm-btn" id="search-close" aria-label="关闭搜索">×</button>' +
         "</div>" +
         '<div id="global-search-results" class="search-results"></div>' +
@@ -1070,6 +1553,12 @@
           hits.push({ kind: "文章", title: p.title, sub: p.date + " · " + p.category, action: function () { window.location.hash = "#/post/" + encodeURIComponent(p.id); } });
         }
       });
+      exhibition.forEach(function (ex, idx) {
+        const hay = [ex.plateNo, ex.title, ex.artist, ex.pixivId, ex.sourceNote, ex.actLabel, ex.linkedTrack ? ex.linkedTrack.title : ""].join(" ").toLowerCase();
+        if (q && hay.includes(q)) {
+          hits.push({ kind: "影集", title: ex.plateNo + " · " + ex.title, sub: "画师：" + ex.artist + " · " + ex.sourceBadge, action: function () { openLightboxFromList(exhibition, idx, "exhibition"); } });
+        }
+      });
       albums.forEach(function (a) {
         if (!q || (a.title + a.titleZh + a.artist).toLowerCase().includes(q)) {
           hits.push({ kind: "唱片", title: a.title + " / " + a.titleZh, sub: a.artist + " · " + a.year.slice(0, 4), action: function () { openAlbumModal(a.id); } });
@@ -1088,17 +1577,17 @@
         });
         friendLinks.forEach(function (l) {
           if ((l.name + l.desc + l.tag).toLowerCase().includes(q)) {
-            hits.push({ kind: "友链", title: l.name, sub: l.tag + " · " + l.desc, action: function () { window.open(l.url, "_blank", "noopener"); } });
+            hits.push({ kind: "友链", title: l.name, sub: (l.tag || "友链") + " · " + l.desc, action: function () { window.open(l.url, "_blank", "noopener"); } });
           }
         });
       }
 
       if (hits.length === 0) {
-        resultsEl.innerHTML = '<p class="page-desc" style="padding:0.8rem 0.4rem">没有找到匹配的内容，换个关键词试试？</p>';
+        resultsEl.innerHTML = '<p class="page-desc" style="padding:0.8rem 0.4rem">没有找到匹配的内容，试试搜「あわしま」「夜明けと蛍」「33700607」或「图论」？</p>';
         return;
       }
 
-      resultsEl.innerHTML = hits.slice(0, 12).map(function (h, i) {
+      resultsEl.innerHTML = hits.slice(0, 14).map(function (h, i) {
         return (
           '<button type="button" class="search-result-item" data-hit-idx="' + i + '">' +
             "<span>" +
@@ -1136,7 +1625,7 @@
   }
 
   /* ------------------------------------------------------------------------
-     6. 右下角「听歌角标」+ 轻柔吉他泛音氛围
+     7. 右下角「听歌角标」+ 轻柔吉他泛音氛围
      ------------------------------------------------------------------------ */
   function startGentleAmbientHarmonics() {
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -1305,10 +1794,10 @@
   }
 
   /* ------------------------------------------------------------------------
-     7. 路由、滚动与初始化
+     8. 路由、滚动与交互细节
      ------------------------------------------------------------------------ */
   function updateActiveNav(routeName) {
-    document.querySelectorAll(".nav-link").forEach(function (link) {
+    document.querySelectorAll(".nav-link, .rail-stop").forEach(function (link) {
       link.classList.toggle("active", link.getAttribute("data-route") === routeName);
     });
   }
@@ -1362,13 +1851,10 @@
           observer.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.06 });
+    }, { threshold: 0.05 });
     items.forEach(function (el) { observer.observe(el); });
   }
 
-  /* ------------------------------------------------------------------------
-     6.5 初次进站帷幕、桌面端跟手光环、3D 实体 CD 倾斜反光
-     ------------------------------------------------------------------------ */
   function initOpeningCurtain() {
     const curtain = document.getElementById("opening-curtain");
     if (!curtain) return;
@@ -1423,18 +1909,20 @@
         rafActive = true;
         requestAnimationFrame(tick);
       }
-      const target = e.target.closest("[data-album-open],[data-lightbox-idx],[data-cursor],.featured-post-card,.timetable-link");
+      const target = e.target.closest("[data-cursor],[data-album-open],[data-lightbox-idx],[data-gallery-idx],[data-exhibition-open],.film-frame,.featured-post-card,.timetable-link");
       if (target) {
         ring.classList.add("is-hover");
         let label = target.getAttribute("data-cursor") || "";
         if (!label) {
           if (target.hasAttribute("data-album-open")) label = "OPEN";
-          else if (target.hasAttribute("data-lightbox-idx")) label = "VIEW";
+          else if (target.hasAttribute("data-lightbox-idx") || target.hasAttribute("data-gallery-idx") || target.hasAttribute("data-exhibition-open") || target.classList.contains("film-frame")) label = "VIEW";
           else label = "READ";
         }
+        ring.classList.toggle("has-label", Boolean(label));
         if (labelEl) labelEl.textContent = label;
       } else {
         ring.classList.remove("is-hover");
+        ring.classList.remove("has-label");
         if (labelEl) labelEl.textContent = "";
       }
     }, { passive: true });
@@ -1552,8 +2040,8 @@
       return;
     }
     if (lightboxModalEl && lightboxModalEl.classList.contains("open")) {
-      if (e.key === "ArrowLeft") openLightbox(currentLightboxIdx - 1);
-      if (e.key === "ArrowRight") openLightbox(currentLightboxIdx + 1);
+      if (e.key === "ArrowLeft") openLightboxFromList(currentLightboxList, currentLightboxIdx - 1, currentLightboxKind);
+      if (e.key === "ArrowRight") openLightboxFromList(currentLightboxList, currentLightboxIdx + 1, currentLightboxKind);
     }
   });
 

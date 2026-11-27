@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1125" fill="none">
+  <defs>
+    <linearGradient id="skyT" x1="0" y1="0" x2="0.4" y2="1">
+      <stop offset="0%" stop-color="#1E54B5"/>
+      <stop offset="46%" stop-color="#58A8EC"/>
+      <stop offset="82%" stop-color="#C8EAFC"/>
+      <stop offset="100%" stop-color="#FAF6E8"/>
+    </linearGradient>
+    <linearGradient id="cloudT" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.97"/>
+      <stop offset="68%" stop-color="#E5F3FD" stop-opacity="0.88"/>
+      <stop offset="100%" stop-color="#87BCE8" stop-opacity="0.5"/>
+    </linearGradient>
+    <linearGradient id="frameT" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FAF7EC"/>
+      <stop offset="100%" stop-color="#EDE6D3"/>
+    </linearGradient>
+    <clipPath id="windowClip">
+      <rect x="114" y="138" width="672" height="752" rx="68"/>
+    </clipPath>
+  </defs>
+
+  <!-- Crisp Ivory Archival Matte Backdrop -->
+  <rect width="900" height="1125" fill="url(#frameT)"/>
+
+  <!-- Subtle Fine Hairline Print Grid -->
+  <g stroke="#11419A" stroke-opacity="0.09" stroke-width="1">
+    <line x1="64" y1="74" x2="836" y2="74"/>
+    <line x1="64" y1="1044" x2="836" y2="1044"/>
+    <line x1="64" y1="74" x2="64" y2="1044"/>
+    <line x1="836" y1="74" x2="836" y2="1044"/>
+  </g>
+
+  <!-- Top Editorial Folio Line -->
+  <text x="86" y="108" font-family="'IBM Plex Mono', monospace" font-size="15" fill="#11419A" letter-spacing="3.5" opacity="0.84">PLATE 03 · HOMAGE ARCHIVE</text>
+  <text x="814" y="108" text-anchor="end" font-family="'IBM Plex Mono', monospace" font-size="14" fill="#C9645F" letter-spacing="2.2">トミサカ · 始発とカフカ</text>
+
+  <!-- Train Window Cutout -->
+  <g clip-path="url(#windowClip)">
+    <rect x="114" y="138" width="672" height="752" fill="url(#skyT)"/>
+
+    <!-- Radiant Morning Sun Halo -->
+    <circle cx="628" cy="306" r="145" fill="#FFFFFF" opacity="0.22"/>
+    <circle cx="628" cy="306" r="68" fill="#FFFDF6" opacity="0.52"/>
+
+    <!-- Sculpted Cumulus Towers -->
+    <path d="M90 790 C130 695, 225 690, 275 725 C315 620, 445 605, 505 660 C550 540, 690 545, 745 640 C780 620, 810 645, 820 670 L820 910 L90 910 Z" fill="url(#cloudT)"/>
+    <path d="M160 890 C220 790, 345 785, 415 830 C485 740, 625 745, 695 820 L800 910 L120 910 Z" fill="#FFFFFF" opacity="0.9"/>
+
+    <!-- Fine Overhead Powerlines -->
+    <g stroke="#113880" stroke-opacity="0.45" stroke-width="1.6" fill="none">
+      <path d="M100 245 Q 450 326, 800 212"/>
+      <path d="M100 296 Q 450 378, 800 278"/>
+      <path d="M100 412 Q 450 482, 800 398" stroke-width="1.15" stroke-opacity="0.34"/>
+    </g>
+
+    <!-- Stylized Paper Birds / Origami Silhouettes (Tomisaka Motif) -->
+    <g fill="#11419A" opacity="0.88">
+      <polygon points="338,402 396,386 364,424 388,452 346,434 314,458"/>
+      <polygon points="364,424 396,386 420,404" fill="#EE827E"/>
+    </g>
+    <g fill="#FFFFFF" stroke="#11419A" stroke-width="1.8" opacity="0.94">
+      <polygon points="468,322 526,304 494,344 522,368 476,350 444,370"/>
+      <polygon points="242,494 282,482 260,510 278,528 248,516 226,530" opacity="0.82"/>
+    </g>
+
+    <!-- Diagonal Glass Light Reflection -->
+    <polygon points="150,138 250,138 114,430 114,260" fill="#FFFFFF" opacity="0.16"/>
+    <polygon points="280,138 332,138 114,578 114,504" fill="#FFFFFF" opacity="0.1"/>
+
+    <!-- Double Window Safety Rails -->
+    <line x1="114" y1="684" x2="786" y2="684" stroke="#FBF9F1" stroke-width="7"/>
+    <line x1="114" y1="684" x2="786" y2="684" stroke="#415D87" stroke-width="2" opacity="0.65"/>
+    <line x1="114" y1="716" x2="786" y2="716" stroke="#FBF9F1" stroke-width="6"/>
+    <line x1="114" y1="716" x2="786" y2="716" stroke="#415D87" stroke-width="1.8" opacity="0.6"/>
+  </g>
+
+  <!-- Crisp Window Rim -->
+  <rect x="114" y="138" width="672" height="752" rx="68" stroke="#1C3970" stroke-width="5"/>
+  <rect x="104" y="128" width="692" height="772" rx="76" stroke="#1C3970" stroke-opacity="0.28" stroke-width="1.5"/>
+
+  <!-- Bottom Archival Colophon Footer Inside SVG -->
+  <text x="114" y="952" font-family="'Cormorant Garamond', 'Shippori Mincho', serif" font-style="italic" font-size="40" fill="#11419A" letter-spacing="1.5">Illustration by Tomisaka</text>
+  <line x1="114" y1="972" x2="472" y2="972" stroke="#11419A" stroke-width="1.4" opacity="0.55"/>
+  <line x1="114" y1="978" x2="290" y2="978" stroke="#EE827E" stroke-width="1.4" opacity="0.8"/>
+  <text x="114" y="1012" font-family="'IBM Plex Mono', monospace" font-size="14" fill="#5D728A" letter-spacing="2">1ST RAIL WINDOW · SHIHATSU TO KAFKA ARCHIVE</text>
+
+  <!-- Red Editorial Hanko Seal -->
+  <rect x="734" y="944" width="52" height="52" rx="8" fill="#EE827E" fill-opacity="0.14" stroke="#EE827E" stroke-width="2"/>
+  <text x="760" y="978" text-anchor="middle" font-family="'Shippori Mincho', serif" font-size="24" fill="#D46662">羊</text>
+</svg>

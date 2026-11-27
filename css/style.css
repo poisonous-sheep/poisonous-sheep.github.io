@@ -3244,3 +3244,1004 @@ html.theme-wiping::view-transition-new(root) {
     grid-template-columns: 1fr;
   }
 }
+
+
+/* ==========================================================================
+   十四幕盛夏光影美术馆 × 东京刊物级排版与暗房灯箱 2.0
+   ========================================================================== */
+
+.ambient-wash {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    900px circle at 52% 24%,
+    var(--ambient-wash, rgba(61, 154, 226, 0.14)),
+    transparent 68%
+  );
+  transition: opacity 720ms var(--ease), background 720ms var(--ease);
+}
+
+.ambient-wash.is-active {
+  opacity: 1;
+}
+
+.curtain-vertical {
+  writing-mode: vertical-rl;
+  letter-spacing: 0.28em;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  opacity: 0.75;
+  margin-bottom: 0.6rem;
+}
+
+/* 首页 Hero 纵排刊头边栏 & 双模式车窗视差 */
+.hero-section.has-tategaki {
+  grid-template-columns: 34px minmax(0, 0.92fr) minmax(380px, 1.18fr);
+  gap: 2.1rem;
+}
+
+.hero-tategaki-rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  align-self: stretch;
+  padding: 0.6rem 0;
+  border-right: 1px solid var(--border);
+  color: var(--text-muted);
+}
+
+.tategaki-text {
+  writing-mode: vertical-rl;
+  font-size: 0.74rem;
+  letter-spacing: 0.34em;
+  color: var(--accent);
+  opacity: 0.78;
+}
+
+.tategaki-issue {
+  writing-mode: vertical-rl;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  opacity: 0.56;
+}
+
+.window-mode-tabs {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg) 68%, transparent);
+}
+
+.window-mode-btn {
+  padding: 0.22rem 0.68rem;
+  border-radius: 999px;
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
+  letter-spacing: 0.02em;
+  color: var(--text-muted);
+  transition: all 280ms var(--ease);
+}
+
+.window-mode-btn:hover {
+  color: var(--accent);
+}
+
+.window-mode-btn.active {
+  background: var(--accent);
+  color: #fbfaf4;
+}
+
+[data-theme="night"] .window-mode-btn.active {
+  color: #09183b;
+}
+
+.triple-windows-row.is-swapping {
+  opacity: 0.25;
+  transform: translateY(3px);
+}
+
+.triple-windows-row {
+  transition: opacity 220ms ease, transform 280ms var(--ease);
+}
+
+.train-pane-glass img {
+  transform: scale(1.04) translate3d(var(--px, 0px), var(--py, 0px), 0);
+  transition: transform 620ms var(--ease);
+}
+
+.train-pane:hover .train-pane-glass img {
+  transform: scale(1.08) translate3d(var(--px, 0px), var(--py, 0px), 0);
+}
+
+.pane-glint {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    118deg,
+    rgba(255, 255, 255, 0.26) 0%,
+    rgba(255, 255, 255, 0.04) 32%,
+    transparent 52%
+  );
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   首页「十四幕 · 35mm 夏末画廊胶片长卷」
+   ========================================================================== */
+
+.filmstrip-section {
+  margin-bottom: 4.5rem;
+}
+
+.filmstrip-shell {
+  position: relative;
+  border-radius: 18px;
+  border: 1px solid var(--border-strong);
+  background:
+    linear-gradient(180deg, rgba(20, 38, 72, 0.04), rgba(20, 38, 72, 0.09)),
+    var(--surface);
+  box-shadow: var(--shadow);
+  padding: 1.45rem 0;
+  overflow: hidden;
+}
+
+[data-theme="night"] .filmstrip-shell {
+  background:
+    linear-gradient(180deg, rgba(4, 10, 26, 0.72), rgba(7, 17, 42, 0.88)),
+    var(--surface);
+}
+
+/* 35mm 上下真实齿孔带 */
+.filmstrip-shell::before,
+.filmstrip-shell::after {
+  content: "";
+  display: block;
+  height: 11px;
+  margin: 0 0.8rem;
+  opacity: 0.52;
+  background-image: repeating-linear-gradient(
+    to right,
+    transparent 0 12px,
+    color-mix(in srgb, var(--accent) 26%, transparent) 12px 24px
+  );
+  border-radius: 3px;
+}
+
+.filmstrip-shell::before {
+  margin-bottom: 1.05rem;
+}
+
+.filmstrip-shell::after {
+  margin-top: 1.05rem;
+}
+
+.filmstrip-track {
+  display: flex;
+  gap: 1.25rem;
+  padding: 0.3rem 1.5rem;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  cursor: grab;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+
+.filmstrip-track.is-dragging {
+  cursor: grabbing;
+  scroll-snap-type: none;
+}
+
+.filmstrip-track::-webkit-scrollbar {
+  height: 5px;
+}
+
+.filmstrip-track::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 999px;
+}
+
+.film-frame {
+  flex: 0 0 326px;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  padding: 0.65rem;
+  border-radius: 13px;
+  border: 1px solid var(--border);
+  background: var(--surface-strong);
+  box-shadow: 0 14px 30px -20px rgba(13, 35, 78, 0.25);
+  transition: transform 380ms var(--ease), border-color 300ms ease, box-shadow 380ms var(--ease);
+}
+
+.film-frame.is-portrait {
+  flex: 0 0 232px;
+}
+
+.film-frame.is-square {
+  flex: 0 0 264px;
+}
+
+.film-frame:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent);
+  box-shadow: 0 22px 38px -18px rgba(17, 65, 154, 0.34);
+}
+
+.film-frame-media {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  aspect-ratio: 16 / 10;
+  background: var(--bg-sky-mid);
+}
+
+.film-frame.is-portrait .film-frame-media {
+  aspect-ratio: 4 / 5;
+}
+
+.film-frame.is-square .film-frame-media {
+  aspect-ratio: 1 / 1;
+}
+
+.film-frame-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 25%;
+  transition: transform 680ms var(--ease);
+}
+
+.film-frame:hover .film-frame-media img {
+  transform: scale(1.05);
+}
+
+.film-frame-tag {
+  position: absolute;
+  top: 0.55rem;
+  left: 0.55rem;
+  padding: 0.16rem 0.52rem;
+  border-radius: 999px;
+  background: rgba(8, 18, 44, 0.72);
+  backdrop-filter: blur(6px);
+  color: #f8f6ec;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+}
+
+.film-frame-body {
+  margin-top: 0.62rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.18rem;
+}
+
+.film-frame-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  color: var(--text-muted);
+}
+
+.film-frame-title {
+  margin: 0;
+  font-size: 0.94rem;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.film-frame-artist {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.filmstrip-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 6;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--border-strong);
+  background: color-mix(in srgb, var(--surface-strong) 88%, transparent);
+  backdrop-filter: blur(10px);
+  color: var(--accent);
+  font-size: 1.05rem;
+  box-shadow: var(--shadow);
+  transition: transform 240ms var(--ease), background-color 240ms ease;
+}
+
+.filmstrip-nav-btn:hover {
+  transform: translateY(-50%) scale(1.08);
+  border-color: var(--accent);
+}
+
+.filmstrip-nav-btn.prev {
+  left: 0.65rem;
+}
+
+.filmstrip-nav-btn.next {
+  right: 0.65rem;
+}
+
+.filmstrip-controls-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0 1.5rem;
+  margin-top: 0.55rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text-muted);
+}
+
+/* ==========================================================================
+   「夏末影集 · 十四幕光影美术馆」专题页 (#/gallery)
+   ========================================================================== */
+
+.exhibition-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.exhibition-act-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.48rem;
+}
+
+.act-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42rem;
+  padding: 0.34rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  transition: all 280ms var(--ease);
+}
+
+.act-pill:hover {
+  color: var(--accent);
+  border-color: var(--border-strong);
+}
+
+.act-pill.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fbfaf4;
+}
+
+[data-theme="night"] .act-pill.active {
+  color: #09183b;
+}
+
+.act-pill-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--coral);
+}
+
+.act-pill.active .act-pill-dot {
+  background: currentColor;
+}
+
+.exhibition-view-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.22rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+}
+
+.view-switch-btn {
+  padding: 0.26rem 0.78rem;
+  border-radius: 999px;
+  font-family: var(--font-sans);
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  transition: all 240ms var(--ease);
+}
+
+.view-switch-btn.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.exhibition-act-epigraph {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1.85rem;
+  padding: 0.95rem 1.25rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--coral);
+  background: var(--surface);
+}
+
+.epigraph-quote {
+  margin: 0;
+  font-size: 0.94rem;
+  color: var(--text);
+  letter-spacing: 0.04em;
+}
+
+.epigraph-time {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+}
+
+/* 非对称 12 列美术馆展墙 */
+.exhibition-wall {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-auto-flow: dense;
+  gap: 1.5rem;
+}
+
+.ex-card {
+  grid-column: span 6;
+  display: flex;
+  flex-direction: column;
+  padding: 0.78rem 0.78rem 1rem;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition: transform 420ms var(--ease), border-color 320ms ease, box-shadow 420ms var(--ease);
+}
+
+.ex-card.is-hero-span {
+  grid-column: span 8;
+}
+
+.ex-card.is-portrait,
+.ex-card.is-square {
+  grid-column: span 4;
+}
+
+.ex-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent);
+}
+
+.ex-frame {
+  position: relative;
+  border-radius: 9px;
+  overflow: hidden;
+  aspect-ratio: 16 / 10;
+  background: var(--bg-sky-mid);
+  border: 1px solid var(--border);
+}
+
+.ex-card.is-portrait .ex-frame {
+  aspect-ratio: 3 / 4;
+}
+
+.ex-card.is-square .ex-frame {
+  aspect-ratio: 1 / 1;
+}
+
+.ex-frame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 22%;
+  transition: transform 700ms var(--ease);
+}
+
+.ex-card:hover .ex-frame img {
+  transform: scale(1.04);
+}
+
+.ex-plate-badge {
+  position: absolute;
+  top: 0.68rem;
+  left: 0.68rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(8, 18, 44, 0.72);
+  backdrop-filter: blur(8px);
+  color: #f8f6ec;
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.1em;
+}
+
+.ex-plaque {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-top: 0.85rem;
+  flex: 1;
+}
+
+.ex-plaque-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text-muted);
+}
+
+.ex-plaque-title {
+  margin: 0.08rem 0 0;
+  font-size: 1.06rem;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.38;
+}
+
+.ex-card:hover .ex-plaque-title {
+  color: var(--accent);
+}
+
+.ex-plaque-artist {
+  font-size: 0.82rem;
+  color: var(--accent);
+}
+
+.ex-plaque-caption {
+  margin: 0.15rem 0 0.45rem;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.72;
+}
+
+.ex-plaque-foot {
+  margin-top: auto;
+  padding-top: 0.6rem;
+  border-top: 1px dashed var(--border);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.ex-plaque-actions {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.42rem;
+}
+
+.ex-source-pill,
+.ex-track-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  padding: 0.18rem 0.56rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-strong);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  transition: all 240ms var(--ease);
+}
+
+a.ex-source-pill:hover,
+.ex-track-btn:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.ex-track-btn {
+  color: var(--coral);
+}
+
+/* 胶片过卷长廊视图 (#/gallery reel 模式) */
+.exhibition-reel-wrap {
+  padding: 1.65rem 0;
+}
+
+.exhibition-reel .film-frame {
+  flex: 0 0 420px;
+}
+
+.exhibition-reel .film-frame.is-portrait {
+  flex: 0 0 290px;
+}
+
+.exhibition-reel .film-frame.is-square {
+  flex: 0 0 340px;
+}
+
+/* ==========================================================================
+   暗房策展灯箱 2.0 (左右分栏档案室弹窗)
+   ========================================================================== */
+
+.lightbox-dossier {
+  max-width: 1120px;
+  padding: 1.45rem;
+}
+
+.lb-dossier-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.48fr) 340px;
+  gap: 1.5rem;
+  align-items: stretch;
+}
+
+.lb-stage-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  min-width: 0;
+}
+
+.lb-stage {
+  position: relative;
+  min-height: 360px;
+  max-height: 64vh;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background:
+    radial-gradient(circle at 50% 48%, var(--lb-aura, rgba(61, 154, 226, 0.16)), transparent 72%),
+    var(--bg-sky-mid);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+[data-theme="night"] .lb-stage {
+  background:
+    radial-gradient(circle at 50% 48%, var(--lb-aura, rgba(126, 194, 240, 0.16)), transparent 72%),
+    #061028;
+}
+
+.lb-stage img {
+  max-width: 100%;
+  max-height: 59vh;
+  object-fit: contain;
+  border-radius: 10px;
+  box-shadow: 0 22px 48px -20px rgba(8, 20, 48, 0.55);
+  display: block;
+}
+
+.lb-counter-pill {
+  position: absolute;
+  top: 0.85rem;
+  left: 0.85rem;
+  padding: 0.24rem 0.68rem;
+  border-radius: 999px;
+  background: rgba(8, 18, 44, 0.74);
+  backdrop-filter: blur(8px);
+  color: #f8f6ec;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+}
+
+.lb-stage-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(8, 18, 44, 0.62);
+  backdrop-filter: blur(8px);
+  color: #f8f6ec;
+  font-size: 1.15rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 220ms var(--ease), background-color 220ms ease;
+}
+
+.lb-stage-arrow:hover {
+  transform: translateY(-50%) scale(1.08);
+  background: var(--accent);
+}
+
+.lb-stage-arrow.prev {
+  left: 0.85rem;
+}
+
+.lb-stage-arrow.next {
+  right: 0.85rem;
+}
+
+.lb-thumb-strip {
+  display: flex;
+  gap: 0.45rem;
+  overflow-x: auto;
+  padding: 0.25rem 0.1rem;
+  scrollbar-width: thin;
+}
+
+.lb-thumb-btn {
+  flex: 0 0 56px;
+  height: 40px;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1.5px solid transparent;
+  opacity: 0.55;
+  transition: opacity 220ms ease, border-color 220ms ease, transform 220ms var(--ease);
+}
+
+.lb-thumb-btn:hover {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+
+.lb-thumb-btn.active {
+  opacity: 1;
+  border-color: var(--accent);
+}
+
+.lb-thumb-btn img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.lb-info-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.95rem;
+  padding: 1.15rem 1.2rem;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.lb-act-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--coral);
+}
+
+.lb-title {
+  margin: 0;
+  font-size: 1.32rem;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.lb-artist {
+  font-size: 0.88rem;
+  color: var(--accent);
+}
+
+.lb-source-box {
+  padding: 0.65rem 0.78rem;
+  border-radius: 9px;
+  border: 1px dashed var(--border-strong);
+  background: var(--accent-soft);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  line-height: 1.65;
+  color: var(--text-muted);
+  word-break: break-word;
+}
+
+.lb-caption {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.82;
+  color: var(--text);
+}
+
+.lb-palette-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.lb-palette-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.36rem;
+  padding: 0.22rem 0.56rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-strong);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  color: var(--text-muted);
+  transition: border-color 220ms ease, transform 220ms var(--ease);
+}
+
+.lb-palette-chip:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.lb-actions {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding-top: 0.6rem;
+  border-top: 1px dashed var(--border);
+}
+
+.lb-actions .btn-primary,
+.lb-actions .btn-ghost {
+  justify-content: center;
+  width: 100%;
+  font-size: 0.8rem;
+}
+
+/* ==========================================================================
+   页脚交互盛夏电车线路图 & 光环细节
+   ========================================================================== */
+
+.rail-footer-nav {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  margin-bottom: 1.15rem;
+  padding: 0.48rem 1rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.rail-stop {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.34rem;
+  padding: 0.16rem 0.36rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  transition: color 240ms ease;
+}
+
+.rail-node {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: 1.4px solid var(--accent);
+  background: var(--bg);
+  transition: transform 240ms var(--ease), background-color 240ms ease, box-shadow 240ms ease;
+}
+
+.rail-node.coral {
+  border-color: var(--coral);
+}
+
+.rail-stop:hover,
+.rail-stop.active {
+  color: var(--accent);
+}
+
+.rail-stop.active .rail-node {
+  background: var(--accent);
+  transform: scale(1.22);
+  box-shadow: 0 0 0 4px var(--accent-soft);
+}
+
+.rail-track {
+  width: 18px;
+  height: 1px;
+  background: var(--border-strong);
+}
+
+.cursor-ring.has-label {
+  width: 58px;
+  height: 58px;
+}
+
+@media (max-width: 1040px) {
+  .hero-section.has-tategaki {
+    grid-template-columns: 1fr;
+    gap: 1.85rem;
+  }
+
+  .hero-tategaki-rail {
+    display: none;
+  }
+
+  .ex-card,
+  .ex-card.is-hero-span {
+    grid-column: span 6;
+  }
+
+  .ex-card.is-portrait,
+  .ex-card.is-square {
+    grid-column: span 6;
+  }
+}
+
+@media (max-width: 860px) {
+  .lb-dossier-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .lb-stage {
+    max-height: 52vh;
+  }
+
+  .lb-stage img {
+    max-height: 48vh;
+  }
+}
+
+@media (max-width: 680px) {
+  .exhibition-wall {
+    grid-template-columns: 1fr;
+  }
+
+  .ex-card,
+  .ex-card.is-hero-span,
+  .ex-card.is-portrait,
+  .ex-card.is-square {
+    grid-column: span 1;
+  }
+
+  .film-frame {
+    flex: 0 0 264px;
+  }
+
+  .film-frame.is-portrait {
+    flex: 0 0 198px;
+  }
+
+  .rail-track {
+    display: none;
+  }
+
+  .rail-footer-nav {
+    border-radius: 14px;
+    gap: 0.45rem 0.7rem;
+  }
+}

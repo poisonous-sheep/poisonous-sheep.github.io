@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 900" fill="none">
+  <defs>
+    <linearGradient id="paperU" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FBF8EE"/>
+      <stop offset="100%" stop-color="#EFE9D8"/>
+    </linearGradient>
+    <linearGradient id="skyU" x1="0" y1="0" x2="0.2" y2="1">
+      <stop offset="0%" stop-color="#1E5CB8"/>
+      <stop offset="56%" stop-color="#60B2EC"/>
+      <stop offset="100%" stop-color="#DDF2FD"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Archival Paper Backdrop -->
+  <rect width="900" height="900" fill="url(#paperU)"/>
+  <rect x="34" y="34" width="832" height="832" rx="18" stroke="#11419A" stroke-opacity="0.16" stroke-width="1.5"/>
+
+  <!-- Film Contact Sheet Header -->
+  <text x="68" y="84" font-family="'IBM Plex Mono', monospace" font-size="14" fill="#5D728A" letter-spacing="3">ARCHIVAL NEGATIVE · ROLL 12 · ORIGIN UNKNOWN</text>
+  <line x1="68" y1="102" x2="832" y2="102" stroke="#11419A" stroke-opacity="0.18"/>
+
+  <!-- 35mm Negative Sprocket Frame -->
+  <g transform="translate(88, 134)">
+    <rect width="724" height="534" rx="14" fill="#17243D"/>
+    <!-- Top Sprocket Holes -->
+    <g fill="#F6F2E4">
+      <rect x="28" y="18" width="28" height="18" rx="4"/>
+      <rect x="86" y="18" width="28" height="18" rx="4"/>
+      <rect x="144" y="18" width="28" height="18" rx="4"/>
+      <rect x="202" y="18" width="28" height="18" rx="4"/>
+      <rect x="260" y="18" width="28" height="18" rx="4"/>
+      <rect x="318" y="18" width="28" height="18" rx="4"/>
+      <rect x="376" y="18" width="28" height="18" rx="4"/>
+      <rect x="434" y="18" width="28" height="18" rx="4"/>
+      <rect x="492" y="18" width="28" height="18" rx="4"/>
+      <rect x="550" y="18" width="28" height="18" rx="4"/>
+      <rect x="608" y="18" width="28" height="18" rx="4"/>
+      <rect x="666" y="18" width="28" height="18" rx="4"/>
+    </g>
+    <!-- Bottom Sprocket Holes -->
+    <g fill="#F6F2E4">
+      <rect x="28" y="498" width="28" height="18" rx="4"/>
+      <rect x="86" y="498" width="28" height="18" rx="4"/>
+      <rect x="144" y="498" width="28" height="18" rx="4"/>
+      <rect x="202" y="498" width="28" height="18" rx="4"/>
+      <rect x="260" y="498" width="28" height="18" rx="4"/>
+      <rect x="318" y="498" width="28" height="18" rx="4"/>
+      <rect x="376" y="498" width="28" height="18" rx="4"/>
+      <rect x="434" y="498" width="28" height="18" rx="4"/>
+      <rect x="492" y="498" width="28" height="18" rx="4"/>
+      <rect x="550" y="498" width="28" height="18" rx="4"/>
+      <rect x="608" y="498" width="28" height="18" rx="4"/>
+      <rect x="666" y="498" width="28" height="18" rx="4"/>
+    </g>
+
+    <!-- Inside Film Exposure: Luminous Summer Sky & Lens Flare -->
+    <rect x="30" y="54" width="664" height="426" rx="8" fill="url(#skyU)"/>
+    <path d="M30 430 C95 360, 190 360, 240 390 C295 315, 420 315, 480 375 C540 330, 635 340, 694 385 L694 480 L30 480 Z" fill="#FFFFFF" opacity="0.9"/>
+    <path d="M30 140 Q 362 230, 694 120" stroke="#143D87" stroke-opacity="0.32" stroke-width="1.6"/>
+    <circle cx="520" cy="182" r="78" fill="#FFFFFF" opacity="0.22"/>
+    <circle cx="520" cy="182" r="34" fill="#FFFDF6" opacity="0.62"/>
+    <circle cx="290" cy="312" r="46" fill="#FFFFFF" opacity="0.16"/>
+
+    <!-- Center Mystery Aperture Reticle -->
+    <circle cx="362" cy="267" r="76" stroke="#FFFFFF" stroke-opacity="0.58" stroke-width="1.2" stroke-dasharray="5 5"/>
+    <text x="362" y="264" text-anchor="middle" font-family="'Shippori Mincho', 'Noto Serif SC', serif" font-size="23" fill="#133D88" letter-spacing="4">夏末佚名底片</text>
+    <text x="362" y="294" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="12" fill="#466996" letter-spacing="2">LOST FRAME · P12</text>
+  </g>
+
+  <!-- Tilted Coral Archival Stamp -->
+  <g transform="translate(592, 610) rotate(-7)">
+    <rect width="214" height="72" rx="10" fill="#EE827E" fill-opacity="0.12" stroke="#D96B67" stroke-width="2.4"/>
+    <text x="107" y="32" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="14" font-weight="600" fill="#D96B67" letter-spacing="2.6">LOST &amp; FOUND</text>
+    <text x="107" y="55" text-anchor="middle" font-family="'Noto Serif SC', serif" font-size="15" fill="#D96B67" letter-spacing="1">忘了哪里扒的图（</text>
+  </g>
+
+  <!-- Bottom Notes -->
+  <text x="88" y="758" font-family="'Shippori Mincho', 'Noto Serif SC', serif" font-size="30" fill="#11419A" letter-spacing="2.5">失物招领处 · 未署名底片</text>
+  <text x="88" y="798" font-family="'IBM Plex Mono', monospace" font-size="14" fill="#5D728A" letter-spacing="1.4">REPLACEABLE SLOT: images/exhibition/p12-uncredited.svg</text>
+  <line x1="88" y1="822" x2="812" y2="822" stroke="#11419A" stroke-opacity="0.16"/>
+</svg>
